@@ -23,7 +23,7 @@ const InfoPagos = ({
         {listPago.length > 0 ? (
           listPago.map((pago, index) => (
             <div className="card-pago" key={index}>
-              {DateCurrent().format4() === pago.date.fecha &&
+              {DateCurrent().format4 === pago.date.fecha &&
                 pago.idUser === iUsuario._id && (
                   <>
                     <button
