@@ -27,11 +27,13 @@ const Ticket = React.forwardRef((props, ref) => {
   const { showDescripcion, tipoTicket, infoOrden, InfoNegocio } = props;
   const [listPromos, setListPromos] = useState([]);
   const [sPago, setSPago] = useState();
+  const [infoPuntosCli, setInfoPuntosCli] = useState(null);
 
   const InfoServicios = useSelector((state) => state.servicios.listServicios);
   const InfoCategorias = useSelector(
     (state) => state.categorias.listCategorias
   );
+  const { InfoPuntos } = useSelector((state) => state.modificadores);
 
   const getInfoDelivery = () => {
     const ICategory = InfoCategorias.find((cat) => cat.nivel === "primario");
@@ -43,12 +45,8 @@ const Ticket = React.forwardRef((props, ref) => {
     return IService;
   };
 
-  const montoDelivery = (dataC) => {
-    if (dataC.Modalidad === "Delivery") {
-      return infoOrden.Items.find((p) => p.item === "Delivery").total;
-    } else {
-      return 0;
-    }
+  const montoDelivery = () => {
+    return infoOrden.Items.find((p) => p.item === "Delivery").total;
   };
 
   const calcularFechaFutura = (numeroDeDias) => {
@@ -70,6 +68,21 @@ const Ticket = React.forwardRef((props, ref) => {
       console.error(
         `No se pudo obtener información de la promoción - ${error}`
       );
+      throw error; // Lanza el error para que pueda ser capturado por Promise.all
+    }
+  };
+
+  const handleGetInfoPuntosCliente = async (dni) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/lava-ya/get-specific-cliente/${dni}`
+      );
+      return response.data;
+    } catch (error) {
+      // Maneja los errores aquí
+      console.error(`No se pudo obtener información de la puntos - ${error}`);
       throw error; // Lanza el error para que pueda ser capturado por Promise.all
     }
   };
@@ -130,7 +143,6 @@ const Ticket = React.forwardRef((props, ref) => {
         const promos = infoOrden.gift_promo;
 
         try {
-          // Utiliza Promise.all para esperar a que todas las llamadas asincrónicas se completen
           const results = await Promise.all(
             promos.map(async (promo) => {
               return await handleGetInfoPromo(promo.codigoCupon);
@@ -139,18 +151,28 @@ const Ticket = React.forwardRef((props, ref) => {
 
           setListPromos(results);
         } catch (error) {
-          // Maneja los errores aquí
           console.error(
             "Error al obtener información de las promociones:",
             error
           );
         }
       }
+      if (
+        infoOrden?.descuento > 0 &&
+        infoOrden?.dni &&
+        infoOrden?.modoDescuento === "Puntos"
+      ) {
+        try {
+          const res = await handleGetInfoPuntosCliente(infoOrden?.dni);
+          setInfoPuntosCli(res);
+        } catch (error) {
+          console.error("Error al obtener información de las Puntos :", error);
+        }
+      }
     };
 
     fetchData();
   }, [infoOrden]);
-
   useEffect(() => {
     if (infoOrden) {
       setSPago(handleGetInfoPago(infoOrden.ListPago, infoOrden.totalNeto));
@@ -378,14 +400,21 @@ const Ticket = React.forwardRef((props, ref) => {
                             infoOrden.Items.reduce(
                               (total, p) => total + parseFloat(p.total),
                               0
-                            ) - montoDelivery(infoOrden)
+                            ) -
+                              infoOrden?.Modalidad ===
+                              "Delivery"
+                              ? montoDelivery()
+                              : 0
                           )}
                         </td>
                       </tr>
-                      <tr>
-                        <td colSpan="3">Delivery :</td>
-                        <td>{montoDelivery(infoOrden)}</td>
-                      </tr>
+                      {infoOrden?.Modalidad === "Delivery" ? (
+                        <tr>
+                          <td colSpan="3">Delivery :</td>
+                          <td>{montoDelivery()}</td>
+                        </tr>
+                      ) : null}
+
                       {infoOrden.factura ? (
                         <tr>
                           <td colSpan="3">
@@ -418,31 +447,62 @@ const Ticket = React.forwardRef((props, ref) => {
                     </tfoot>
                   ) : null}
                 </table>
-                {infoOrden.modoDescuento === "Promocion" &&
-                infoOrden.descuento > 0 &&
-                !tipoTicket ? (
+                {infoOrden?.descuento > 0 && !tipoTicket ? (
                   <div className="space-ahorro">
                     <h2 className="title">
                       ! Felicidades Ahorraste {simboloMoneda}
                       {infoOrden?.descuento} ¡
                     </h2>
-                    <div className="info-promo">
-                      <span>Usando nuestras promociones :</span>
-                      <div className="body-ahorro">
-                        <div className="list-promo">
-                          <ul>
-                            {infoOrden.cargosExtras.beneficios.promociones.map(
-                              (p) => (
-                                <li key={p.codigoCupon}>{p.descripcion}</li>
-                              )
-                            )}
-                          </ul>
-                        </div>
-                        <div className="img-pet">
-                          <img src={AhorroPet} alt="" />
+                    {infoOrden?.modoDescuento === "Promocion" ? (
+                      <div className="info-promo">
+                        <span>Usando nuestras promociones :</span>
+                        <div className="body-ahorro">
+                          <div className="list-promo">
+                            <ul>
+                              {infoOrden?.cargosExtras.beneficios.promociones.map(
+                                (p) => (
+                                  <li key={p.codigoCupon}>{p.descripcion}</li>
+                                )
+                              )}
+                            </ul>
+                          </div>
+                          <div className="img-pet">
+                            <img src={AhorroPet} alt="" />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="info-point">
+                        <span>Usando nuestras sistema de puntos :</span>
+                        <div className="body-ahorro">
+                          <div className="detalle-puntos">
+                            <div className="content-items">
+                              <div className="item-dt">
+                                <span>PUNTOS USADOS</span>
+                                <strong>
+                                  {infoOrden?.cargosExtras.beneficios.puntos}
+                                </strong>
+                              </div>
+                              <div className="item-dt">
+                                <span>PUNTOS RESTANTES</span>
+                                <strong>{infoPuntosCli?.scoreTotal}</strong>
+                              </div>
+                            </div>
+                            <div className="info-extra-dt">
+                              <span>
+                                Por cada {InfoPuntos?.score} puntos recibes{" "}
+                                {simboloMoneda} {InfoPuntos?.valor} de descuento
+                              </span>
+                            </div>
+                          </div>
+                          {sizePaper80 ? (
+                            <div className="img-pet">
+                              <img src={AhorroPet} alt="" />
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : null}
               </div>

@@ -40,7 +40,9 @@ const Negocio = () => {
     },
   });
 
-  const openModal = (data) =>
+  const openModal = (data) => {
+    let confirmationEnabled = true;
+
     modals.openConfirmModal({
       title: "Acttualizar Informacion de Negocio",
       centered: true,
@@ -52,8 +54,14 @@ const Negocio = () => {
       labels: { confirm: "Si", cancel: "No" },
       confirmProps: { color: "green" },
       onCancel: () => console.log("Cancelado"),
-      onConfirm: () => handleUpdateNegocio(data),
+      onConfirm: () => {
+        if (confirmationEnabled) {
+          confirmationEnabled = false;
+          handleUpdateNegocio(data);
+        }
+      },
     });
+  };
 
   const handleUpdateNegocio = (data) => {
     dispatch(UpdateInfoNegocio(data));

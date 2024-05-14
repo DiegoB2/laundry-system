@@ -105,6 +105,11 @@ const HeaderAdmin = () => {
             <div className="left" />
             <div className="right" />
           </div>
+          {/* <li>
+            <Link to={`./${PrivateRoutes.PERSONAL}`} className="active">
+              ASISTENCIA
+            </Link>
+          </li> */}
           <li>
             <Link to={`./${PrivateRoutes.PROMOCIONES}`}>Promociones</Link>
           </li>

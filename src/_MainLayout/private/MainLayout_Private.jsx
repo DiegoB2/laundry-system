@@ -357,6 +357,8 @@ const PrivateMasterLayout = (props) => {
     return () => {
       // Remove the event listener when the component unmounts
       socket.off("server:newOrder");
+      socket.off("server:newCodigo");
+
       socket.off("server:orderUpdated");
       socket.off("server:cPago");
       socket.off("server:cGasto");
@@ -403,21 +405,27 @@ const PrivateMasterLayout = (props) => {
             {props.children}
           </section>
 
-          <div id="btn-extra" className="btn-action-extra">
-            {InfoUsuario.rol !== Roles.PERS ? (
+          {InfoUsuario.rol !== Roles.PERS ? (
+            <div id="add-gasto" className={`btn-floating`}>
+              <button className="ico-toggle">
+                <i className="fa-solid fa-comment-dollar" />
+              </button>
               <button
-                id="btn-gasto"
-                className="add-gasto"
+                className="btn-gasto"
                 onClick={() => {
                   setMGasto(true);
                 }}
               >
                 Agregar Gasto
               </button>
-            ) : null}
+            </div>
+          ) : null}
+          <div id="show-informe" className={`btn-floating`}>
+            <button className="ico-toggle">
+              <i className="fa-solid fa-clipboard-list" />
+            </button>
             <button
-              id="btn-gasto"
-              className="add-gasto"
+              className="btn-informe"
               onClick={() => {
                 setMInformeDiario(true);
               }}
@@ -425,6 +433,7 @@ const PrivateMasterLayout = (props) => {
               Informe Diario
             </button>
           </div>
+
           {mInformeDiario ? (
             <Portal
               onClose={() => {

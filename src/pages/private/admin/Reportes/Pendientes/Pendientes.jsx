@@ -404,6 +404,8 @@ const Pendientes = () => {
   };
 
   const openConfirmacion = async () => {
+    let confirmationEnabled = true;
+
     modals.openConfirmModal({
       title: "Registro de Factura",
       centered: true,
@@ -419,7 +421,12 @@ const Pendientes = () => {
       labels: { confirm: "Si", cancel: "No" },
       confirmProps: { color: "green" },
       //onCancel: () => console.log("cancelado"),
-      onConfirm: () => handleChangeLocation_OrderService(),
+      onConfirm: () => {
+        if (confirmationEnabled) {
+          confirmationEnabled = false;
+          handleChangeLocation_OrderService();
+        }
+      },
     });
   };
 

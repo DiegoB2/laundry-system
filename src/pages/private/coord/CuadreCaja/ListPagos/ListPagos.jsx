@@ -3,7 +3,10 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { ingresoDigital } from "../../../../../services/global";
-import { DateFormat24h } from "../../../../../utils/functions";
+import {
+  DateFormat24h,
+  formatThousandsSeparator,
+} from "../../../../../utils/functions";
 import { Text } from "@mantine/core";
 import { ReactComponent as Eliminar } from "../../../../../utils/img/OrdenServicio/eliminar.svg";
 import "./listPagos.scss";
@@ -264,14 +267,16 @@ const ListPagos = ({
                 </tr>
               </thead>
               <tbody>
-                {iClienteEfectivo.map((cliente, index) => (
-                  <tr key={index}>
-                    <td>{cliente.orden}</td>
-                    <td>{cliente.Modalidad}</td>
-                    <td>{cliente.nombre}</td>
-                    <td>{cliente.total}</td>
-                  </tr>
-                ))}
+                {iClienteEfectivo
+                  .sort((a, b) => parseInt(a.orden) - parseInt(b.orden))
+                  .map((cliente, index) => (
+                    <tr key={index}>
+                      <td>{cliente.orden}</td>
+                      <td>{cliente.Modalidad}</td>
+                      <td>{cliente.nombre}</td>
+                      <td>{formatThousandsSeparator(cliente.total)}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -300,7 +305,7 @@ const ListPagos = ({
                       <td>{gasto.tipo}</td>
                       <td>{gasto.motivo}</td>
                       <td>{DateFormat24h(gasto.date.hora)}</td>
-                      <td>{gasto.monto}</td>
+                      <td>{formatThousandsSeparator(gasto.monto)}</td>
 
                       {savedActivated === false && type !== "view" ? (
                         <td
@@ -333,14 +338,16 @@ const ListPagos = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {iClienteTransferencia.map((cliente, index) => (
-                    <tr key={index}>
-                      <td>{cliente.orden}</td>
-                      <td>{cliente.Modalidad}</td>
-                      <td>{cliente.nombre}</td>
-                      <td>{cliente.total}</td>
-                    </tr>
-                  ))}
+                  {iClienteTransferencia
+                    .sort((a, b) => parseInt(a.orden) - parseInt(b.orden))
+                    .map((cliente, index) => (
+                      <tr key={index}>
+                        <td>{cliente.orden}</td>
+                        <td>{cliente.Modalidad}</td>
+                        <td>{cliente.nombre}</td>
+                        <td>{formatThousandsSeparator(cliente.total)}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -360,21 +367,23 @@ const ListPagos = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {iClienteTarjeta.map((cliente, index) => (
-                    <tr
-                      key={index}
-                      className={`${
-                        cliente.estadoPrenda === "anulado"
-                          ? "mode-anulado"
-                          : null
-                      }`}
-                    >
-                      <td>{cliente.orden}</td>
-                      <td>{cliente.Modalidad}</td>
-                      <td>{cliente.nombre}</td>
-                      <td>{cliente.total}</td>
-                    </tr>
-                  ))}
+                  {iClienteTarjeta
+                    .sort((a, b) => parseInt(a.orden) - parseInt(b.orden))
+                    .map((cliente, index) => (
+                      <tr
+                        key={index}
+                        className={`${
+                          cliente.estadoPrenda === "anulado"
+                            ? "mode-anulado"
+                            : null
+                        }`}
+                      >
+                        <td>{cliente.orden}</td>
+                        <td>{cliente.Modalidad}</td>
+                        <td>{cliente.nombre}</td>
+                        <td>{formatThousandsSeparator(cliente.total)}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
