@@ -149,6 +149,7 @@ const Gasto = ({ onClose }) => {
                     )
                   : ""
               }
+              min={0}
               placeholder="Ingrese Monto"
               precision={2}
               step={0.05}

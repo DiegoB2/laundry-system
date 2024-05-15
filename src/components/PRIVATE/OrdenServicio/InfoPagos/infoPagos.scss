@@ -37,6 +37,17 @@
           color: #fff;
         }
       }
+      .sn-sm {
+        position: absolute;
+        left: calc(50% - 70px);
+        padding: 5px 10px;
+        text-align: center;
+        border: 1px solid silver;
+        border-radius: 10px;
+        top: -10px;
+        font-weight: 500;
+        background: #fff;
+      }
       .mm-pago {
         padding: 10px;
         padding-top: 20px;

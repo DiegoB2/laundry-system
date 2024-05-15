@@ -3,8 +3,8 @@
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from "react";
 import {
+  formatThousandsSeparator,
   handleGetInfoPago,
-  roundDecimal,
 } from "../../../../../../../utils/functions";
 // import "./ticket50.scss";
 import "./ticket80.scss";
@@ -18,7 +18,6 @@ import axios from "axios";
 import {
   nameImpuesto,
   politicaAbandono,
-  simboloMoneda,
 } from "../../../../../../../services/global";
 import { useSelector } from "react-redux";
 
@@ -374,10 +373,10 @@ const Ticket = React.forwardRef((props, ref) => {
                         <tr>
                           <td>•</td>
                           <td>{p.item}</td>
-                          <td>{roundDecimal(p.cantidad)}</td>
+                          <td>{formatThousandsSeparator(p.cantidad)}</td>
                           {!tipoTicket ? (
                             <>
-                              <td>{roundDecimal(p.total)}</td>
+                              <td>{formatThousandsSeparator(p.total)}</td>
                             </>
                           ) : null}
                         </tr>
@@ -396,7 +395,7 @@ const Ticket = React.forwardRef((props, ref) => {
                       <tr>
                         <td colSpan="3">Subtotal :</td>
                         <td>
-                          {roundDecimal(
+                          {formatThousandsSeparator(
                             infoOrden.Items.reduce(
                               (total, p) => total + parseFloat(p.total),
                               0
@@ -426,21 +425,25 @@ const Ticket = React.forwardRef((props, ref) => {
                       ) : null}
                       <tr>
                         <td colSpan="3">Descuento :</td>
-                        <td>{infoOrden.descuento ? infoOrden.descuento : 0}</td>
+                        <td>
+                          {infoOrden.descuento
+                            ? formatThousandsSeparator(infoOrden.descuento)
+                            : 0}
+                        </td>
                       </tr>
                       <tr>
                         <td colSpan="3">Total a Pagar :</td>
-                        <td>{roundDecimal(infoOrden.totalNeto)}</td>
+                        <td>{formatThousandsSeparator(infoOrden.totalNeto)}</td>
                       </tr>
                       {sPago?.estado === "Incompleto" ? (
                         <>
                           <tr>
                             <td colSpan="3">A Cuenta :</td>
-                            <td>{sPago?.pago}</td>
+                            <td>{formatThousandsSeparator(sPago?.pago)}</td>
                           </tr>
                           <tr>
                             <td colSpan="3">Deuda Pendiente :</td>
-                            <td>{sPago?.falta}</td>
+                            <td>{formatThousandsSeparator(sPago?.falta)}</td>
                           </tr>
                         </>
                       ) : null}
@@ -450,8 +453,8 @@ const Ticket = React.forwardRef((props, ref) => {
                 {infoOrden?.descuento > 0 && !tipoTicket ? (
                   <div className="space-ahorro">
                     <h2 className="title">
-                      ! Felicidades Ahorraste {simboloMoneda}
-                      {infoOrden?.descuento} ¡
+                      ! Felicidades Ahorraste
+                      {formatThousandsSeparator(infoOrden?.descuento, true)} ¡
                     </h2>
                     {infoOrden?.modoDescuento === "Promocion" ? (
                       <div className="info-promo">
@@ -480,18 +483,30 @@ const Ticket = React.forwardRef((props, ref) => {
                               <div className="item-dt">
                                 <span>PUNTOS USADOS</span>
                                 <strong>
-                                  {infoOrden?.cargosExtras.beneficios.puntos}
+                                  {formatThousandsSeparator(
+                                    infoOrden?.cargosExtras.beneficios.puntos
+                                  )}
                                 </strong>
                               </div>
                               <div className="item-dt">
                                 <span>PUNTOS RESTANTES</span>
-                                <strong>{infoPuntosCli?.scoreTotal}</strong>
+                                <strong>
+                                  {formatThousandsSeparator(
+                                    infoPuntosCli?.scoreTotal
+                                  )}
+                                </strong>
                               </div>
                             </div>
                             <div className="info-extra-dt">
                               <span>
-                                Por cada {InfoPuntos?.score} puntos recibes{" "}
-                                {simboloMoneda} {InfoPuntos?.valor} de descuento
+                                Por cada{" "}
+                                {formatThousandsSeparator(InfoPuntos?.score)}{" "}
+                                puntos recibes{" "}
+                                {formatThousandsSeparator(
+                                  InfoPuntos?.valor,
+                                  true
+                                )}{" "}
+                                de descuento
                               </span>
                             </div>
                           </div>
@@ -510,10 +525,7 @@ const Ticket = React.forwardRef((props, ref) => {
             {!tipoTicket ? (
               <>
                 <div className="monto-final">
-                  <h2>
-                    Pago : {simboloMoneda}
-                    {sPago?.pago}
-                  </h2>
+                  <h2>Pago : {formatThousandsSeparator(sPago?.pago, true)}</h2>
                   <h3 className={`${infoOrden.factura ? null : "sf"} estado`}>
                     {sPago?.estado.toUpperCase()}
                   </h3>

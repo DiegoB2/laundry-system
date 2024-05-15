@@ -9,24 +9,29 @@
     display: flex;
     justify-content: space-between;
     padding: 10px 20px;
+
     border: 1px solid silver;
     border-radius: 15px;
     align-items: center;
     .title-recibo {
       display: flex;
-
-      @media only screen and (max-width: 650px) {
-        display: grid !important;
+      h1 {
+        line-height: 1.2;
+      }
+      @media only screen and (max-width: 740px) {
         h1 {
-          font-size: 20px !important;
+          font-size: 3vw;
         }
       }
-      @media only screen and (max-width: 450px) {
+      @media only screen and (max-width: 555px) {
+        flex-wrap: wrap;
+        justify-content: center;
         h1 {
           font-size: 15px !important;
         }
       }
     }
+
     @keyframes pulse {
       0% {
         transform: scale(1);
@@ -49,6 +54,7 @@
     }
 
     .btn-saved {
+      width: max-content;
       background-color: #ffa500;
       position: relative;
       overflow: hidden;
@@ -59,6 +65,12 @@
     .btn-saved:hover {
       animation-play-state: paused;
       box-shadow: 0 0 20px rgba(255, 204, 128, 1);
+    }
+    @media only screen and (max-width: 900px) {
+      display: grid;
+      place-items: center;
+      gap: 10px;
+      justify-content: center;
     }
   }
   .container {

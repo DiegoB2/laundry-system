@@ -193,8 +193,8 @@ const InfoExtra = styled.div.withConfig({
       tr {
         grid-template-columns: ${({ showDelete }) =>
           showDelete === "y"
-            ? "200px 300px 80px 100px 50px"
-            : "200px 300px 80px 100px"};
+            ? "120px 300px 80px 100px 50px"
+            : "120px 300px 80px 100px"};
       }
       thead {
         tr {
@@ -233,7 +233,7 @@ const ListPagos = ({
   const InfoUsuario = useSelector((state) => state.user.infoUsuario);
   const [showDelete, setShowDelete] = useState("n");
 
-  const handleNoPagar = (id) => {
+  const handleEliminarGasto = (id) => {
     modals.openConfirmModal({
       title: "Elimiancion de Gasto",
       centered: true,
@@ -253,9 +253,9 @@ const ListPagos = ({
 
   return (
     <InfoExtra showDelete={showDelete}>
-      <div className="efectivo tb-info">
-        <span>EFECTIVO</span>
-        {iClienteEfectivo ? (
+      {iClienteEfectivo.length > 0 ? (
+        <div className="efectivo tb-info">
+          <span>EFECTIVO</span>
           <div className="paid-orders-efectivo">
             <table>
               <thead>
@@ -280,12 +280,12 @@ const ListPagos = ({
               </tbody>
             </table>
           </div>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
       <div>
-        <div className="gastos tb-info">
-          <span>GASTOS</span>
-          {iGastos ? (
+        {iGastos.length > 0 ? (
+          <div className="gastos tb-info">
+            <span>GASTOS</span>
             <div className="daily-expenses">
               <table>
                 <thead>
@@ -311,7 +311,7 @@ const ListPagos = ({
                         <td
                           className="delete-row"
                           onClick={() => {
-                            handleNoPagar(gasto._id);
+                            handleEliminarGasto(gasto._id);
                           }}
                         >
                           <Eliminar className="ic-d" />
@@ -322,11 +322,12 @@ const ListPagos = ({
                 </tbody>
               </table>
             </div>
-          ) : null}
-        </div>
-        <div className="transferencia tb-info">
-          <span>{ingresoDigital}</span>
-          {iClienteTransferencia ? (
+          </div>
+        ) : null}
+        {iClienteTransferencia.length > 0 ? (
+          <div className="transferencia tb-info">
+            <span>{ingresoDigital}</span>
+
             <div className="paid-orders-tranf">
               <table>
                 <thead>
@@ -351,11 +352,12 @@ const ListPagos = ({
                 </tbody>
               </table>
             </div>
-          ) : null}
-        </div>
-        <div className="tarjeta tb-info">
-          <span>TARJETA</span>
-          {iClienteTarjeta ? (
+          </div>
+        ) : null}
+        {iClienteTarjeta.length > 0 ? (
+          <div className="tarjeta tb-info">
+            <span>TARJETA</span>
+
             <div className="paid-orders-tarj">
               <table>
                 <thead>
@@ -387,8 +389,8 @@ const ListPagos = ({
                 </tbody>
               </table>
             </div>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
     </InfoExtra>
   );

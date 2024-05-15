@@ -10,7 +10,7 @@ const InfoCuadreStyle = styled.div`
   display: grid;
   grid-template-rows: 305px auto;
   padding: 20px 10%;
-
+  gap: 30px;
   .form-ic {
     max-width: 300px;
     display: grid;
@@ -85,17 +85,19 @@ const InfoCuadre = ({
           readOnly
         />
         <TextInput
-          label="Gastos"
-          radius="md"
-          value={formatThousandsSeparator(gastos)}
-          readOnly
-        />
-        <TextInput
           label="Pedidos Pagados (EFECTIVO)"
           radius="md"
           value={formatThousandsSeparator(pedidosPagadosEfectivo)}
           readOnly
         />
+
+        <TextInput
+          label="Gastos"
+          radius="md"
+          value={formatThousandsSeparator(gastos)}
+          readOnly
+        />
+
         <TextInput
           label="En caja deberia haber :"
           radius="md"

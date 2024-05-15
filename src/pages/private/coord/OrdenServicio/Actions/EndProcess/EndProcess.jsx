@@ -298,8 +298,7 @@ const EndProcess = ({ IdCliente, onClose }) => {
                 Anular
               </button>
             ) : null}
-            {infoCliente.estadoPrenda !== "entregado" &&
-            infoCliente.modeRegistro !== "antiguo" ? (
+            {infoCliente.estadoPrenda !== "entregado" ? (
               <button
                 type="button"
                 className="btn-exm"

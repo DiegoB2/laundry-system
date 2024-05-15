@@ -624,8 +624,11 @@ const CuadreCaja = () => {
                               }}
                               className="fila"
                             >
-                              {Math.abs(
-                                cuadresTransformados[rowIndex]?.margenError
+                              {formatThousandsSeparator(
+                                Math.abs(
+                                  cuadresTransformados[rowIndex]?.margenError
+                                ),
+                                true
                               )}
                             </td>
                             <td

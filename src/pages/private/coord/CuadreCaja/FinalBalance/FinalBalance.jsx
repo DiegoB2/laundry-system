@@ -139,7 +139,9 @@ const FinalBalance = ({
             type="button"
             onClick={async () => {
               await handleSavedActivated(true);
-              openModal(true);
+              setTimeout(() => {
+                openModal(true);
+              }, 1000);
             }}
           >
             Guardar y Generar PDF
@@ -151,7 +153,9 @@ const FinalBalance = ({
             type="button"
             onClick={async () => {
               await handleSavedActivated(true);
-              openModal(false);
+              setTimeout(() => {
+                openModal(false);
+              }, 1000);
             }}
           >
             Generar PDF

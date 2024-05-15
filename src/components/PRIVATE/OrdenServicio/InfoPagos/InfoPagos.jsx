@@ -23,30 +23,35 @@ const InfoPagos = ({
         {listPago.length > 0 ? (
           listPago.map((pago, index) => (
             <div className="card-pago" key={index}>
-              {DateCurrent().format4 === pago.date.fecha &&
-                pago.idUser === iUsuario._id && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIPago(pago);
-                        setIsPortalPago(!isPortalPago);
-                      }}
-                      className="btn-action btn-edit"
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleNoPagar(pago._id);
-                      }}
-                      className="btn-action btn-delete"
-                    >
-                      <i className="fa-solid fa-delete-left"></i>
-                    </button>
-                  </>
-                )}
+              {pago.idUser === iUsuario._id &&
+              ((pago.isCounted === false &&
+                DateCurrent().format4 === pago.ordenDateCreation) ||
+                DateCurrent().format4 === pago.date.fecha) ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIPago(pago);
+                      setIsPortalPago(!isPortalPago);
+                    }}
+                    className="btn-action btn-edit"
+                  >
+                    <i className="fa-solid fa-pen"></i>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleNoPagar(pago._id);
+                    }}
+                    className="btn-action btn-delete"
+                  >
+                    <i className="fa-solid fa-delete-left"></i>
+                  </button>
+                </>
+              ) : null}
+              {pago.isCounted === false ? (
+                <span className="sn-sm">PAGO ANTIGUO</span>
+              ) : null}
 
               <div className="mm-pago">
                 <div className="monto-p">{pago.total}</div>

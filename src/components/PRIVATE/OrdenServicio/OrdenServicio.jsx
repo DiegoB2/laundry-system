@@ -496,20 +496,25 @@ const OrdenServicio = ({
     let newStatePago;
     if (value) {
       const iPago = {
+        ...value,
+        isCounted: true,
+        idUser: iUsuario._id,
         date: {
           fecha: moment().format("YYYY-MM-DD"),
           hora: moment().format("HH:mm"),
         },
-        ...value,
-        isCounted: true,
-        idUser: iUsuario._id,
       };
 
       if (iEdit && iEdit.modeEditAll === false && iPago._id) {
         let confirmationEnabled = true;
         if (confirmationEnabled) {
           confirmationEnabled = false;
-          dispatch(UpdatePago({ idPago: iPago._id, pagoUpdated: iPago }));
+          dispatch(
+            UpdatePago({
+              idPago: iPago._id,
+              pagoUpdated: value.isCounted === false ? value : iPago,
+            })
+          );
         }
         navigate(
           `/${PrivateRoutes.PRIVATE}/${PrivateRoutes.LIST_ORDER_SERVICE}`
@@ -708,7 +713,11 @@ const OrdenServicio = ({
       <div className="head-recibo">
         <div className="title-recibo">
           <h1>{titleMode}&nbsp;</h1>
-          <h1>ORDEN DE SERVICIO {iCodigo}</h1>
+          <h1>
+            ORDEN DE SERVICIO&nbsp;
+            {iEdit?.modeRegistro === "antiguo" ? "(ANTIGUA)" : null}&nbsp;
+          </h1>
+          <h1>{iEdit ? `N° ${iEdit.codRecibo} ` : iCodigo}</h1>
         </div>
         <Button className="btn-saved" type="submit">
           {titleMode}
