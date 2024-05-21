@@ -29,7 +29,6 @@ import "./endProcess.scss";
 import { socket } from "../../../../../../utils/socket/connect";
 import { Notify } from "../../../../../../utils/notify/Notify";
 import { simboloMoneda } from "../../../../../../services/global";
-import { GetDeliveryById } from "../../../../../../services/default.services";
 import { AddPago } from "../../../../../../redux/actions/aPago";
 
 const EndProcess = ({ IdCliente, onClose }) => {
@@ -145,7 +144,7 @@ const EndProcess = ({ IdCliente, onClose }) => {
         motivo: `[${String(infoCliente.codRecibo).padStart(
           4,
           "0"
-        )}] Delivery recojo en ${values.tipoTrasporte} - ${infoCliente.Nombre}`,
+        )}] Delivery envio en ${values.tipoTrasporte} - ${infoCliente.Nombre}`,
         date: {
           fecha: DateCurrent().format4,
           hora: DateCurrent().format3,

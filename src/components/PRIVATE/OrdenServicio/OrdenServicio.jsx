@@ -399,7 +399,7 @@ const OrdenServicio = ({
         fecha: tFecha(info.dateRecojo),
         hora: tHora(info.dateRecojo),
       },
-      Modalidad: delivery ? "Delivery" : "Tienda",
+      Modalidad: mode,
       Nombre: info.name,
       Items: infoIntem,
       celular: info.phone,
