@@ -104,7 +104,7 @@ const FinalBalance = ({
         <TextInput
           label="Monto en Caja"
           radius="md"
-          value={formatThousandsSeparator(totalCaja)}
+          value={formatThousandsSeparator(+totalCaja.toFixed(2))}
           readOnly
         />
         <NumberInput

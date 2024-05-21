@@ -55,11 +55,16 @@ export const AddOrdenServices = createAsyncThunk(
 
       if ("newGasto" in res) {
         const { newGasto } = res;
-        console.log(newGasto);
         socket.emit("client:cGasto", newGasto);
       }
 
-      socket.emit("client:newOrder", res);
+      if ("newCodigo" in res) {
+        const { newCodigo } = res;
+        socket.emit("client:updateCodigo", newCodigo);
+      }
+
+      socket.emit("client:newOrder", newOrder);
+
       return newOrder;
     } catch (error) {
       console.log(error.response.data.mensaje);

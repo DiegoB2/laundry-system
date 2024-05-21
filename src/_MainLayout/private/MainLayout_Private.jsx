@@ -272,7 +272,7 @@ const PrivateMasterLayout = (props) => {
       dispatch(updateRegistrosNCuadrados({ tipoMovimiento: "gastos", data }));
     });
     // CODIGO
-    socket.on("server:newCodigo", (data) => {
+    socket.on("server:updateCodigo", (data) => {
       dispatch(LS_nextCodigo(data));
     });
     // PUNTOS
@@ -357,7 +357,7 @@ const PrivateMasterLayout = (props) => {
     return () => {
       // Remove the event listener when the component unmounts
       socket.off("server:newOrder");
-      socket.off("server:newCodigo");
+      socket.off("server:updateCodigo");
 
       socket.off("server:orderUpdated");
       socket.off("server:cPago");

@@ -198,7 +198,7 @@ const CashCounter = ({
               </td>
               <td>
                 <label htmlFor="">
-                  {formatThousandsSeparator(+mS.total, true)}
+                  {formatThousandsSeparator((+mS.total).toFixed(2), true)}
                 </label>
               </td>
             </tr>
@@ -214,7 +214,7 @@ const CashCounter = ({
             type="text"
             placeholder="Descuento..."
             autoComplete="off"
-            value={formatThousandsSeparator(totalCaja)}
+            value={formatThousandsSeparator(+totalCaja.toFixed(2))}
             readOnly
           />
         </div>
