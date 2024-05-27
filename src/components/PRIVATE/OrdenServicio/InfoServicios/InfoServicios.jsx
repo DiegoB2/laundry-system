@@ -4,17 +4,14 @@
 import React from "react";
 import "./infoServicios.scss";
 import { ReactComponent as Eliminar } from "../../../../utils/img/OrdenServicio/eliminar.svg";
-import { simboloMoneda } from "../../../../services/global";
+import { nameImpuesto, simboloMoneda } from "../../../../services/global";
 import { NumberInput } from "@mantine/core";
 import { useSelector } from "react-redux";
 import BotonModel from "../../BotonModel/BotonModel";
 import InputSelectedPrenda from "../../InputSelectedPrenda/InputSelectedPrenda";
 import { useEffect } from "react";
 import ValidIco from "../../../ValidIco/ValidIco";
-import {
-  formatRoundedNumber,
-  formatThousandsSeparator,
-} from "../../../../utils/functions";
+import { formatThousandsSeparator } from "../../../../utils/functions";
 
 const InfoServicios = ({
   paso,
@@ -25,14 +22,12 @@ const InfoServicios = ({
   iEdit,
   iDelivery,
   iServicios,
+  iPuntos,
   error,
   touched,
 }) => {
   const iNegocio = useSelector((state) => state.negocio.infoNegocio);
   const iCategorias = useSelector((state) => state.categorias.listCategorias);
-  const { InfoImpuesto, InfoPuntos } = useSelector(
-    (state) => state.modificadores
-  );
 
   const addRowGarment = (idServicio) => {
     const IService = iServicios.find((service) => service._id === idServicio);
@@ -106,8 +101,8 @@ const InfoServicios = ({
   };
 
   const MontoxPoints = (xpoints) => {
-    const puntos = parseFloat(InfoPuntos.score);
-    const valor = parseFloat(InfoPuntos.valor);
+    const puntos = parseFloat(iPuntos.score);
+    const valor = parseFloat(iPuntos.valor);
     const equivalenteEnSoles = (xpoints / puntos) * valor;
 
     return equivalenteEnSoles;
@@ -337,7 +332,7 @@ const InfoServicios = ({
                       <NumberInput
                         value={+values.cargosExtras.beneficios.puntos}
                         label={`Descuento x Puntos -  Max(${iCliente.scoreTotal})`}
-                        description={`Por cada ${InfoPuntos.score} puntos -  ${simboloMoneda} ${InfoPuntos.valor} de descuento`}
+                        description={`Por cada ${iPuntos.score} puntos -  ${simboloMoneda} ${iPuntos.valor} de descuento`}
                         max={parseInt(iCliente?.scoreTotal)}
                         formatter={(value) => formatThousandsSeparator(value)}
                         min={0}
@@ -362,8 +357,8 @@ const InfoServicios = ({
                           </label>
                           <br />
                           <span>
-                            Por cada {InfoPuntos.score} puntos - {simboloMoneda}{" "}
-                            {InfoPuntos.valor} de descuento
+                            Por cada {iPuntos.score} puntos - {simboloMoneda}{" "}
+                            {iPuntos.valor} de descuento
                           </span>
                         </>
                       ) : null}
@@ -376,8 +371,22 @@ const InfoServicios = ({
               </tr>
               <tr>
                 <td></td>
-                <td></td>
-                <td></td>
+                {values.factura ? (
+                  <>
+                    <td>
+                      {nameImpuesto} ({values.cargosExtras.igv.valor * 100} %) :
+                    </td>
+                    <td>
+                      {simboloMoneda} {values.cargosExtras.igv.importe}
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td></td>
+                    <td></td>
+                  </>
+                )}
+
                 <td></td>
               </tr>
               <tr>

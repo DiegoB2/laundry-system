@@ -32,7 +32,6 @@ const Ticket = React.forwardRef((props, ref) => {
   const InfoCategorias = useSelector(
     (state) => state.categorias.listCategorias
   );
-  // const { InfoPuntos } = useSelector((state) => state.modificadores);
 
   const getInfoDelivery = () => {
     const ICategory = InfoCategorias.find((cat) => cat.nivel === "primario");
@@ -183,63 +182,67 @@ const Ticket = React.forwardRef((props, ref) => {
       {infoOrden ? (
         <div className="container-ticket" ref={ref}>
           <div className="body-orden-service">
-            <div className="receipt_header">
-              <div className="name-bussiness">
-                <Logo className="img-logo" />
-              </div>
-              {sizePaper80 === false ? (
-                <>
-                  <div className="i-negocio">
-                    <span>Horario de Atencion</span>
-                    {InfoNegocio.horario.map((hor, index) => (
-                      <span key={index}>{hor.horario}</span>
-                    ))}
-                  </div>
-                  <div className="i-negocio">
-                    <span>Direccion</span>
-                    <span>{InfoNegocio?.direccion}</span>
-                  </div>
-                  <div className="i-negocio " style={{ paddingBottom: "0" }}>
-                    <span>Telefono de contacto</span>
-                    <div className="flexd">
-                      {InfoNegocio.contacto.map((num, index) => (
-                        <span key={index}> {num.numero}</span>
+            {!tipoTicket ? (
+              <div className="receipt_header">
+                <div className="name-bussiness">
+                  <Logo className="img-logo" />
+                </div>
+                {sizePaper80 === false ? (
+                  <>
+                    <div className="i-negocio">
+                      <span>Horario de Atencion</span>
+                      {InfoNegocio.horario.map((hor, index) => (
+                        <span key={index}>{hor.horario}</span>
                       ))}
                     </div>
-                  </div>
-                </>
-              ) : (
-                <table className="info-table">
-                  <tbody>
-                    <tr>
-                      <td>Direccion:</td>
-                      <td>{InfoNegocio?.direccion}</td>
-                    </tr>
-                    <tr>
-                      <td>Telefono:</td>
-                      <td className="u-line">
+                    <div className="i-negocio">
+                      <span>Direccion</span>
+                      <span>{InfoNegocio?.direccion}</span>
+                    </div>
+                    <div className="i-negocio " style={{ paddingBottom: "0" }}>
+                      <span>Telefono de contacto</span>
+                      <div className="flexd">
                         {InfoNegocio.contacto.map((num, index) => (
-                          <span key={index}>
-                            {num.numero}{" "}
-                            {index !== InfoNegocio.contacto.length - 1 && (
-                              <>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</>
-                            )}
-                          </span>
+                          <span key={index}> {num.numero}</span>
                         ))}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Horario:</td>
-                      <td className="m-line">
-                        {InfoNegocio.horario.map((hor, index) => (
-                          <span key={index}>{hor.horario}</span>
-                        ))}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              )}
-            </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <table className="info-table">
+                    <tbody>
+                      <tr>
+                        <td>Direccion:</td>
+                        <td>{InfoNegocio?.direccion}</td>
+                      </tr>
+                      {InfoNegocio.contacto.length > 0 ? (
+                        <tr>
+                          <td>Telefono:</td>
+                          <td className="u-line">
+                            {InfoNegocio.contacto.map((num, index) => (
+                              <span key={index}>
+                                {num.numero}{" "}
+                                {index !== InfoNegocio.contacto.length - 1 && (
+                                  <>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</>
+                                )}
+                              </span>
+                            ))}
+                          </td>
+                        </tr>
+                      ) : null}
+                      <tr>
+                        <td>Horario:</td>
+                        <td className="m-line">
+                          {InfoNegocio.horario.map((hor, index) => (
+                            <span key={index}>{hor.horario}</span>
+                          ))}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            ) : null}
             <div className="info-client">
               <div className="cod-rec">
                 <p className="l-text">
@@ -400,10 +403,9 @@ const Ticket = React.forwardRef((props, ref) => {
                               (total, p) => total + parseFloat(p.total),
                               0
                             ) -
-                              infoOrden?.Modalidad ===
-                              "Delivery"
-                              ? montoDelivery()
-                              : 0
+                              (infoOrden?.Modalidad === "Delivery"
+                                ? montoDelivery()
+                                : 0)
                           )}
                         </td>
                       </tr>
@@ -476,7 +478,7 @@ const Ticket = React.forwardRef((props, ref) => {
                       </div>
                     ) : (
                       <div className="info-point">
-                        <span>Usando nuestras sistema de puntos :</span>
+                        <span>Usando nuestro sistema de puntos :</span>
                         <div className="body-ahorro">
                           <div className="detalle-puntos">
                             <div className="content-items">
@@ -497,18 +499,6 @@ const Ticket = React.forwardRef((props, ref) => {
                                 </strong>
                               </div>
                             </div>
-                            {/* <div className="info-extra-dt">
-                              <span>
-                                Por cada{" "}
-                                {formatThousandsSeparator(InfoPuntos?.score)}{" "}
-                                puntos recibes{" "}
-                                {formatThousandsSeparator(
-                                  InfoPuntos?.valor,
-                                  true
-                                )}{" "}
-                                de descuento
-                              </span>
-                            </div> */}
                           </div>
                           {sizePaper80 ? (
                             <div className="img-pet">

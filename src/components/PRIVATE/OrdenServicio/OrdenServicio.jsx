@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import InfoPromociones from "./InfoPromociones/InfoPromociones";
 import InfoPuntos from "./InfoPuntos/InfoPuntos";
 import InfoPago from "./InfoPago/InfoPago";
-import { simboloMoneda } from "../../../services/global";
+import { showFactura, simboloMoneda } from "../../../services/global";
 import { modals } from "@mantine/modals";
 import axios from "axios";
 import {
@@ -35,6 +35,8 @@ import { useDisclosure } from "@mantine/hooks";
 import InfoPagos from "./InfoPagos/InfoPagos";
 import MetodoPago from "../MetodoPago/MetodoPago";
 import Portal from "../Portal/Portal";
+import SwtichDimension from "../../SwitchDimension/SwitchDimension";
+import InfoFactura from "./InfoFactura/InfoFactura";
 
 const OrdenServicio = ({
   mode,
@@ -53,8 +55,8 @@ const OrdenServicio = ({
   const iUsuario = useSelector((state) => state.user.infoUsuario);
   const iDelivery = useSelector((state) => state.servicios.serviceDelivery);
   const iServicios = useSelector((state) => state.servicios.listServicios);
+  const InfoNegocio = useSelector((state) => state.negocio.infoNegocio);
 
-  const [delivery, setDelivery] = useState(false);
   const [sidePanelVisible, setSidePanelVisible] = useState(false);
 
   const [listCupones, setListCupones] = useState([]);
@@ -121,6 +123,7 @@ const OrdenServicio = ({
         : mode === "Delivery" && nameDefault
         ? nameDefault
         : "",
+      Modalidad: iEdit ? iEdit.Modalidad : mode,
       direccion: iEdit ? iEdit.direccion : "",
       phone: iEdit ? iEdit.celular : "",
       dateRecojo: iEdit?.dateRecepcion?.fecha
@@ -395,11 +398,12 @@ const OrdenServicio = ({
       iEdit?.estado === "reservado";
 
     const infoOrden = {
+      codRecibo: iCodigo,
       dateRecepcion: {
         fecha: tFecha(info.dateRecojo),
         hora: tHora(info.dateRecojo),
       },
-      Modalidad: mode,
+      Modalidad: info.Modalidad,
       Nombre: info.name,
       Items: infoIntem,
       celular: info.phone,
@@ -710,17 +714,68 @@ const OrdenServicio = ({
   return (
     <form onSubmit={formik.handleSubmit} className="content-recibo">
       <div className="head-recibo">
-        <div className="title-recibo">
-          <h1>{titleMode}&nbsp;</h1>
-          <h1>
-            ORDEN DE SERVICIO&nbsp;
-            {iEdit?.modeRegistro === "antiguo" ? "(ANTIGUA)" : null}&nbsp;
-          </h1>
-          <h1>{iEdit ? `N° ${iEdit.codRecibo} ` : iCodigo}</h1>
+        <div
+          className={`h-colum-data ${
+            !InfoNegocio?.hasMobility ? "width-ct" : null
+          }`}
+        >
+          <div className="title-recibo">
+            <h1>{titleMode}&nbsp;</h1>
+            <h1>
+              ORDEN DE SERVICIO&nbsp;
+              {iEdit?.modeRegistro === "antiguo" ? "(ANTIGUA)" : null}&nbsp;
+            </h1>
+            <h1>{iEdit ? `N° ${iEdit.codRecibo} ` : iCodigo}</h1>
+          </div>
+          <Button className="btn-saved" type="submit">
+            {titleMode}
+          </Button>
         </div>
-        <Button className="btn-saved" type="submit">
-          {titleMode}
-        </Button>
+        {InfoNegocio?.hasMobility ? (
+          <div className="h-colum-modo">
+            <SwtichDimension
+              onSwitch="Tienda"
+              offSwitch="Delivery"
+              name="Modalidad"
+              defaultValue={
+                formik.values.Modalidad === "Delivery" ? false : true
+              }
+              handleChange={(value) => {
+                formik.setFieldValue("Modalidad", value);
+                if (value === "Delivery") {
+                  formik.setFieldValue("items", [
+                    {
+                      identificador: iDelivery._id,
+                      tipo: "servicio",
+                      cantidad: 1,
+                      item: "Delivery",
+                      simboloMedida: "vj",
+                      descripcion: "Movilidad",
+                      price: iDelivery.precioVenta,
+                      total: iDelivery.precioVenta,
+                      disable: {
+                        cantidad: true,
+                        item: true,
+                        descripcion: false,
+                        total: false,
+                        action: true,
+                      },
+                    },
+                    ...formik.values.items,
+                  ]);
+                } else {
+                  const updatedItems = formik.values.items.filter(
+                    (item) => item.identificador !== iDelivery._id
+                  );
+                  formik.setFieldValue("items", updatedItems);
+                }
+              }}
+              colorOn="#75cbaf"
+              // colorOff=""
+              disabled={iEdit ? (iEdit.modeEditAll ? false : true) : false}
+            />
+          </div>
+        ) : null}
       </div>
       <div className="container">
         <div className="principal-data">
@@ -744,6 +799,7 @@ const OrdenServicio = ({
             descripcion="¿Qué trajo el cliente?"
             iEdit={iEdit}
             iDelivery={iDelivery}
+            iPuntos={iPuntos}
             error={formik.errors}
             touched={formik.touched}
             iServicios={iServicios}
@@ -757,6 +813,16 @@ const OrdenServicio = ({
             descripcion="¿Para cuando estara Listo?"
             iEdit={iEdit}
           />
+          {showFactura ? (
+            <InfoFactura
+              paso={showFactura ? "4" : "5"}
+              descripcion="Agregar Factura"
+              changeValue={handleChageValue}
+              values={formik.values}
+              iPuntos={iPuntos}
+              iEdit={iEdit}
+            />
+          ) : null}
           {(iEdit && iEdit.modeEditAll) || !iEdit ? (
             <>
               <InfoDescuento
