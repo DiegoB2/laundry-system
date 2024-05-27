@@ -134,8 +134,8 @@ const OrdenServicio = ({
         : new Date(),
       datePrevista: iEdit?.datePrevista?.fecha
         ? moment(iEdit.datePrevista.fecha, "YYYY-MM-DD").toDate()
-        : new Date(),
-      dayhour: iEdit?.datePrevista?.hora || "17:00",
+        : moment().add(1, "days").toDate(),
+      dayhour: iEdit?.datePrevista?.hora || "18:00",
       listPago: iEdit ? iEdit.ListPago : [],
       pago: iEdit
         ? handleGetInfoPago(iEdit.ListPago, iEdit.totalNeto).estado
