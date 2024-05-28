@@ -88,54 +88,49 @@ const List = () => {
           placeholder: "Cliente",
         },
         //enableSorting: false,
-        size: 100,
+        size: 200,
       },
       {
-        accessorKey: "Modalidad",
-        header: "Modalidad",
+        accessorKey: "DNI",
+        header: documento,
         //enableSorting: false,
-        filterVariant: "select",
-        mantineFilterSelectProps: { data: ["TIENDA", "DELIVERY"] },
-        mantineFilterTextInputProps: { placeholder: "Modalidad" },
-        editVariant: "select",
-        mantineEditSelectProps: {
-          data: [
-            {
-              value: "Tienda",
-              label: "Tienda",
-            },
-            {
-              value: "Delivery",
-              label: "Delivery",
-            },
-          ],
+        mantineFilterTextInputProps: {
+          placeholder: documento,
         },
-        enableEditing: false,
-        size: 100,
+        size: 90,
       },
       {
-        accessorKey: "FechaRecepcion",
-        header: "Recepcion",
+        accessorKey: "Celular",
+        header: "Celular",
+        //enableSorting: false,
         mantineFilterTextInputProps: {
-          placeholder: "Fecha",
+          placeholder: "Numero",
         },
         size: 100,
       },
-      {
-        accessorKey: "items",
-        header: "Items",
-        mantineFilterTextInputProps: {
-          placeholder: "Item",
-        },
-        Cell: ({ cell }) => (
-          <MultiSelect
-            data={cell.getValue()}
-            value={cell.getValue()}
-            readOnly
-          />
-        ),
-        size: 250,
-      },
+      // {
+      //   accessorKey: "Modalidad",
+      //   header: "Modalidad",
+      //   //enableSorting: false,
+      //   filterVariant: "select",
+      //   mantineFilterSelectProps: { data: ["TIENDA", "DELIVERY"] },
+      //   mantineFilterTextInputProps: { placeholder: "Modalidad" },
+      //   editVariant: "select",
+      //   mantineEditSelectProps: {
+      //     data: [
+      //       {
+      //         value: "Tienda",
+      //         label: "Tienda",
+      //       },
+      //       {
+      //         value: "Delivery",
+      //         label: "Delivery",
+      //       },
+      //     ],
+      //   },
+      //   enableEditing: false,
+      //   size: 100,
+      // },
       {
         accessorKey: "PParcial",
         header: "Monto Cobrado",
@@ -174,7 +169,7 @@ const List = () => {
           ],
         },
         enableEditing: false,
-        size: 150,
+        size: 140,
       },
       {
         accessorKey: "totalNeto",
@@ -187,16 +182,22 @@ const List = () => {
         mantineFilterTextInputProps: {
           placeholder: "Total",
         },
-        size: 130,
+        size: 100,
       },
       {
-        accessorKey: "Celular",
-        header: "Celular",
-        //enableSorting: false,
+        accessorKey: "items",
+        header: "Items",
         mantineFilterTextInputProps: {
-          placeholder: "Numero",
+          placeholder: "Item",
         },
-        size: 80,
+        Cell: ({ cell }) => (
+          <MultiSelect
+            data={cell.getValue()}
+            value={cell.getValue()}
+            readOnly
+          />
+        ),
+        size: 250,
       },
       {
         accessorKey: "Direccion",
@@ -218,6 +219,15 @@ const List = () => {
             ""
           ),
         size: 200,
+      },
+
+      {
+        accessorKey: "FechaRecepcion",
+        header: "Recepcion",
+        mantineFilterTextInputProps: {
+          placeholder: "Fecha",
+        },
+        size: 100,
       },
       {
         accessorKey: "Location",
@@ -278,15 +288,7 @@ const List = () => {
         },
         size: 120,
       },
-      {
-        accessorKey: "DNI",
-        header: documento,
-        //enableSorting: false,
-        mantineFilterTextInputProps: {
-          placeholder: documento,
-        },
-        size: 80,
-      },
+
       {
         accessorKey: "onWaiting",
         header: "Orden en Espera...",

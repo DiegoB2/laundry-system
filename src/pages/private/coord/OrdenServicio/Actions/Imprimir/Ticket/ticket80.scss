@@ -479,3 +479,12 @@ $sText: 0.8em;
     page-break-after: always;
   }
 }
+
+@media print {
+  .page2 {
+    page-break-after: always;
+  }
+  @page {
+    margin: 0.1mm; /* Ajusta según tus necesidades */
+  }
+}

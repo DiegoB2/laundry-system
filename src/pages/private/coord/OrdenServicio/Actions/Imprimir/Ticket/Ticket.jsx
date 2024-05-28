@@ -16,6 +16,7 @@ import { ReactComponent as Logo } from "../../../../../../../utils/img/Logo/logo
 import moment from "moment";
 import axios from "axios";
 import {
+  impOnPrice,
   nameImpuesto,
   politicaAbandono,
 } from "../../../../../../../services/global";
@@ -31,6 +32,10 @@ const Ticket = React.forwardRef((props, ref) => {
   const InfoServicios = useSelector((state) => state.servicios.listServicios);
   const InfoCategorias = useSelector(
     (state) => state.categorias.listCategorias
+  );
+
+  const { InfoImpuesto: iImpuesto } = useSelector(
+    (state) => state.modificadores
   );
 
   const getInfoDelivery = () => {
@@ -398,15 +403,17 @@ const Ticket = React.forwardRef((props, ref) => {
                       <tr>
                         <td colSpan="3">Subtotal :</td>
                         <td>
-                          {formatThousandsSeparator(
-                            infoOrden.Items.reduce(
-                              (total, p) => total + parseFloat(p.total),
-                              0
-                            ) -
-                              (infoOrden?.Modalidad === "Delivery"
-                                ? montoDelivery()
-                                : 0)
-                          )}
+                          {impOnPrice
+                            ? formatThousandsSeparator(
+                                infoOrden.subTotal -
+                                  infoOrden.subTotal * iImpuesto.IGV
+                              )
+                            : formatThousandsSeparator(
+                                infoOrden.subTotal -
+                                  (infoOrden?.Modalidad === "Delivery"
+                                    ? montoDelivery()
+                                    : 0)
+                              )}
                         </td>
                       </tr>
                       {infoOrden?.Modalidad === "Delivery" ? (
@@ -424,7 +431,19 @@ const Ticket = React.forwardRef((props, ref) => {
                           </td>
                           <td>{infoOrden.cargosExtras.igv.importe}</td>
                         </tr>
-                      ) : null}
+                      ) : (
+                        <tr>
+                          <td colSpan="3">
+                            {nameImpuesto} (
+                            {infoOrden.cargosExtras.igv.valor * 100} %) :
+                          </td>
+                          <td>
+                            {formatThousandsSeparator(
+                              infoOrden.subTotal * iImpuesto.IGV
+                            )}
+                          </td>
+                        </tr>
+                      )}
                       <tr>
                         <td colSpan="3">Descuento :</td>
                         <td>
@@ -567,6 +586,151 @@ const Ticket = React.forwardRef((props, ref) => {
                 ) : null}
               </>
             ) : null}
+          </div>
+          <div className="body-orden-service">
+            <div className="info-client">
+              <div className="cod-rec">
+                <p className="l-text">
+                  <span className="title-o">ORDEN DE SERVICIO</span>
+                  <span className="number-o">
+                    N° {String(infoOrden.codRecibo).padStart(4, "0")}
+                  </span>
+                </p>
+              </div>
+              <div className="info-detail">
+                <table className="tb-date">
+                  <tbody>
+                    <tr>
+                      <td>Ingreso:</td>
+                      <td>
+                        <div className="date-time">
+                          {sizePaper80 ? (
+                            <span>
+                              {handleShowDateTime(
+                                infoOrden.dateRecepcion.fecha,
+                                infoOrden.dateRecepcion.hora
+                              )}
+                            </span>
+                          ) : (
+                            <>
+                              <span>
+                                {
+                                  handleShowDateTime(
+                                    infoOrden.dateRecepcion.fecha,
+                                    infoOrden.dateRecepcion.hora
+                                  ).SInfoD
+                                }
+                              </span>
+                              <span>
+                                {
+                                  handleShowDateTime(
+                                    infoOrden.dateRecepcion.fecha,
+                                    infoOrden.dateRecepcion.hora
+                                  ).FInfoD
+                                }
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Entrega:</td>
+                      <td>
+                        <div className="date-time">
+                          {sizePaper80 ? (
+                            <span>
+                              {handleShowDateTime(
+                                infoOrden.datePrevista.fecha,
+                                infoOrden.datePrevista.hora
+                              )}
+                            </span>
+                          ) : (
+                            <>
+                              <span>
+                                {
+                                  handleShowDateTime(
+                                    infoOrden.datePrevista.fecha,
+                                    infoOrden.datePrevista.hora
+                                  ).SInfoD
+                                }
+                              </span>
+                              <span>
+                                {
+                                  handleShowDateTime(
+                                    infoOrden.datePrevista.fecha,
+                                    infoOrden.datePrevista.hora
+                                  ).FInfoD
+                                }
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="i-cliente">
+                  <div className="h-cli">
+                    <span>Nombres del Cliente</span>
+                    <h2>{infoOrden.Nombre}</h2>
+                  </div>
+                  <table className="tb-info-cliente">
+                    <tbody>
+                      {infoOrden.direccion ? (
+                        <tr className="f-direccion">
+                          <td>Direccion : </td>
+                          <td>&nbsp;&nbsp;{infoOrden.direccion}</td>
+                        </tr>
+                      ) : null}
+                      {infoOrden.celular ? (
+                        <tr className="f-telf">
+                          <td>Telefono : </td>
+                          <td>&nbsp;&nbsp;{infoOrden.celular}</td>
+                        </tr>
+                      ) : null}
+                      <tr className="f-attend">
+                        <td>Atentido por : </td>
+                        <td>&nbsp;&nbsp;{infoOrden.attendedBy.name}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div className="receipt_body page2">
+              <div className="items">
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Item</th>
+                      <th>Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {infoOrden.Items.filter(
+                      (p) => p.identificador !== getInfoDelivery()?._id
+                    ).map((p, index) => (
+                      <React.Fragment key={`${infoOrden._id}-${index}`}>
+                        <tr>
+                          <td>•</td>
+                          <td>{p.item}</td>
+                          <td>{formatThousandsSeparator(p.cantidad)}</td>
+                        </tr>
+                        {showDescripcion && p.descripcion ? (
+                          <tr className="fila_descripcion">
+                            <td colSpan={!tipoTicket ? 4 : 3}>
+                              {spaceLine(p.descripcion)}
+                            </td>
+                          </tr>
+                        ) : null}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       ) : (

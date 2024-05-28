@@ -27,7 +27,7 @@ const index = () => {
   const InfoNegocio = useSelector((state) => state.negocio.infoNegocio);
 
   const [showDescripcion, setDescription] = useState(false);
-  const [tipoTicket, setTipoTicket] = useState(false);
+  // const [tipoTicket, setTipoTicket] = useState(false);
   const [phoneA, setPhoneA] = useState(
     infoOrden.celular
       ? `${codigoPhonePais}${infoOrden.celular.replace(/\s/g, "")}`
@@ -100,7 +100,7 @@ const index = () => {
         ) : null}
       </div>
       <div className="actions">
-        <SwtichModel
+        {/* <SwtichModel
           title="Tipo Ticket :"
           onSwitch="Produccion" // ON = TRUE
           offSwitch="Cliente" // OFF = FALSE
@@ -111,7 +111,7 @@ const index = () => {
             // value = (TRUE O FALSE)
             setTipoTicket(!tipoTicket);
           }}
-        />
+        /> */}
         <SwtichModel
           title="Descripcion :"
           onSwitch="Mostrar" // ON = TRUE
@@ -128,7 +128,7 @@ const index = () => {
       <Ticket
         ref={componentRef}
         showDescripcion={showDescripcion}
-        tipoTicket={tipoTicket}
+        tipoTicket={false}
         infoOrden={infoOrden}
         InfoNegocio={InfoNegocio}
       />

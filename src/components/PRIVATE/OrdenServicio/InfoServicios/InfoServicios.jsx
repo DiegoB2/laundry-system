@@ -4,7 +4,11 @@
 import React from "react";
 import "./infoServicios.scss";
 import { ReactComponent as Eliminar } from "../../../../utils/img/OrdenServicio/eliminar.svg";
-import { nameImpuesto, simboloMoneda } from "../../../../services/global";
+import {
+  impOnPrice,
+  nameImpuesto,
+  simboloMoneda,
+} from "../../../../services/global";
 import { NumberInput } from "@mantine/core";
 import { useSelector } from "react-redux";
 import BotonModel from "../../BotonModel/BotonModel";
@@ -28,6 +32,9 @@ const InfoServicios = ({
 }) => {
   const iNegocio = useSelector((state) => state.negocio.infoNegocio);
   const iCategorias = useSelector((state) => state.categorias.listCategorias);
+  const { InfoImpuesto: iImpuesto } = useSelector(
+    (state) => state.modificadores
+  );
 
   const addRowGarment = (idServicio) => {
     const IService = iServicios.find((service) => service._id === idServicio);
@@ -366,7 +373,15 @@ const InfoServicios = ({
                   )}
                 </td>
                 <td>Subtotal :</td>
-                <td>{formatThousandsSeparator(values.subTotal, true)}</td>
+                {impOnPrice ? (
+                  <td>
+                    {formatThousandsSeparator(
+                      values.subTotal - values.subTotal * iImpuesto.IGV
+                    )}
+                  </td>
+                ) : (
+                  <td>{formatThousandsSeparator(values.subTotal, true)}</td>
+                )}
                 <td></td>
               </tr>
               <tr>
@@ -378,6 +393,17 @@ const InfoServicios = ({
                     </td>
                     <td>
                       {simboloMoneda} {values.cargosExtras.igv.importe}
+                    </td>
+                  </>
+                ) : impOnPrice ? (
+                  <>
+                    <td>
+                      {nameImpuesto} ({values.cargosExtras.igv.valor * 100} %) :
+                    </td>
+                    <td>
+                      {formatThousandsSeparator(
+                        values.subTotal * iImpuesto.IGV
+                      )}
                     </td>
                   </>
                 ) : (

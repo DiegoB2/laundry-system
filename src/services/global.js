@@ -1,7 +1,8 @@
 // Zona Horaria
 export const timeZone = "America/Lima";
 // Factura
-export const showFactura = true;
+export const showFactura = false;
+export const impOnPrice = true;
 // Tipo de Moneda
 export const tipoMoneda = "PEN";
 // Formato de la moneda (separacion de miles - decimales) segun la configuracion regional
