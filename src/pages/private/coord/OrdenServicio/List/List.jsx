@@ -12,6 +12,7 @@ import { modals } from "@mantine/modals";
 import Portal from "../../../../../components/PRIVATE/Portal/Portal";
 import Detalle from "../../../../../utils/img/Otros/detalle.png";
 import DetalleM from "../../../../../utils/img/Otros/detalleM.png";
+import IWhatsapp from "../../../../../utils/img/Otros/iWhatsapp.png";
 import "./list.scss";
 
 import moment from "moment";
@@ -107,6 +108,43 @@ const List = () => {
     });
   };
 
+  const handleSendM = (iRow) => {
+    const horario = InfoNegocio.horario
+      .map((item) => `• *${item.horario}*`)
+      .join("\n");
+    const number = iRow.Celular;
+
+    if (number) {
+      const mensaje = `Hola! *${iRow.Nombre}* 👋
+Le saluda la *LAVANDERÍA ${InfoNegocio.name}* 😃
+                  
+Le informo que ya está *LISTO* 👍 su pedido${
+        iRow.Pago !== "Completo"
+          ? ` ${
+              iRow.Pago === "Pendiente"
+                ? `con monto a pagar de *${formatThousandsSeparator(
+                    iRow.totalNeto,
+                    true
+                  )}*`
+                : `con un monto pendiente de *${formatThousandsSeparator(
+                    iRow.totalNeto - iRow.PParcial,
+                    true
+                  )}*`
+            }`
+          : "."
+      } 
+Puede pasar a recogerlo ahora 😃
+Su orden es *#${iRow.Recibo}* ✏
+                  
+*RECUERDA* que el horario de atención es:
+${horario}`;
+
+      WSendMessage(mensaje, number);
+    } else {
+      Notify("Cliente sin número", "", "fail");
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -149,76 +187,56 @@ const List = () => {
         Cell: ({ cell, row }) => {
           const value = cell.getValue();
           const iRow = row.original;
+
           return (
             <div className="cell-state">
-              {value === "ready" ? (
-                <button
-                  className="cancel-state"
-                  onClick={() => {
-                    openModal("inProgress", iRow.Id);
-                  }}
-                >
-                  <i className="fa-solid fa-x"></i>
-                </button>
+              {iRow.EstadoPrenda !== "anulado" ? (
+                <div className="cell-btns-action">
+                  {value === "ready" ? (
+                    <button
+                      className="cancel-state"
+                      onClick={() => {
+                        openModal("inProgress", iRow.Id);
+                      }}
+                    >
+                      <i className="fa-solid fa-x"></i>
+                    </button>
+                  ) : (
+                    <img
+                      className="ico-whatsapp"
+                      src={IWhatsapp}
+                      alt="whatsapp"
+                      onClick={() => handleSendM(iRow)}
+                    />
+                  )}
+                  <Box
+                    className="btn-state-lavado"
+                    sx={() => ({
+                      backgroundColor:
+                        value === "ready" ? "#ffbf2e" : "#6582ff",
+                      borderRadius: "4px",
+                      fontWeight: "700",
+                      color: "#fff",
+                      textAlign: "center",
+                      padding: "10px 15px",
+                      "&:hover": {
+                        backgroundColor:
+                          value === "ready" ? "#ffa500" : "#4169e1",
+                        cursor: "pointer",
+                      },
+                    })}
+                    onClick={() => {
+                      if (value === "ready") {
+                        handleSendM(iRow);
+                      } else {
+                        openModal("ready", iRow.Id);
+                      }
+                    }}
+                  >
+                    {value === "inProgress" ? "PROCESANDO" : "LISTO"}
+                  </Box>
+                </div>
               ) : null}
-
-              <Box
-                className="btn-state-lavado"
-                sx={() => ({
-                  backgroundColor: value === "ready" ? "#ffbf2e" : "#6582ff",
-                  borderRadius: "4px",
-                  fontWeight: "700",
-                  color: "#fff",
-                  textAlign: "center",
-                  padding: "10px 15px",
-                  "&:hover": {
-                    backgroundColor: value === "ready" ? "#ffa500" : "#4169e1",
-                    cursor: "pointer",
-                  },
-                })}
-                onClick={() => {
-                  if (value === "ready") {
-                    const horario = InfoNegocio.horario
-                      .map((item) => `• *${item.horario}*`)
-                      .join("\n");
-                    const number = iRow.Celular;
-
-                    if (number) {
-                      const mensaje = `Hola! *${iRow.Nombre}* 👋
-Le saluda la *LAVANDERÍA ${InfoNegocio.name}* 😃
-                                      
-Le informo que ya está *LISTO* 👍 su pedido${
-                        iRow.Pago !== "Completo"
-                          ? ` ${
-                              iRow.Pago === "Pendiente"
-                                ? `con monto a pagar de *${formatThousandsSeparator(
-                                    iRow.totalNeto,
-                                    true
-                                  )}*`
-                                : `con un monto pendiente de *${formatThousandsSeparator(
-                                    iRow.totalNeto - iRow.PParcial,
-                                    true
-                                  )}*`
-                            }`
-                          : "."
-                      } 
-Puede pasar a recogerlo ahora 😃
-Su orden es *#${iRow.Recibo}* ✏
-                                      
-*RECUERDA* que el horario de atención es:
-${horario}`;
-
-                      WSendMessage(mensaje, number);
-                    } else {
-                      Notify("Cliente sin número", "", "fail");
-                    }
-                  } else {
-                    openModal("ready", iRow.Id);
-                  }
-                }}
-              >
-                {value === "inProgress" ? "PROCESANDO" : "LISTO"}
-              </Box>
             </div>
           );
         },
@@ -266,6 +284,60 @@ ${horario}`;
       //   enableEditing: false,
       //   size: 100,
       // },
+      {
+        accessorKey: "FechaEntrega",
+        header: "Fecha Entrega",
+        //enableSorting: false,
+        mantineFilterTextInputProps: {
+          placeholder: "Fecha",
+        },
+        size: 120,
+      },
+      {
+        accessorKey: "onWaiting",
+        header: "En Espera",
+        enableColumnFilter: false,
+        Cell: ({ cell }) =>
+          // Wrapped the arrow function with parentheses
+          cell.getValue().stado ? (
+            <Box
+              sx={(theme) => ({
+                backgroundColor: cell.getValue().stadoEntrega
+                  ? theme.colors.blue[9]
+                  : cell.getValue().nDias < 20
+                  ? theme.colors.green[9]
+                  : cell.getValue().nDias >= 21 && cell.getValue().nDias <= 30
+                  ? theme.colors.yellow[9]
+                  : theme.colors.red[9],
+                borderRadius: "4px",
+                color: "#fff",
+                textAlign: "center",
+                padding: "10px 15px",
+              })}
+            >
+              {cell.getValue().showText}
+            </Box>
+          ) : (
+            <span>-</span>
+          ),
+        size: 100,
+      },
+      {
+        accessorKey: "items",
+        header: "Items",
+        mantineFilterTextInputProps: {
+          placeholder: "Item",
+        },
+        Cell: ({ cell }) => (
+          <MultiSelect
+            data={cell.getValue()}
+            value={cell.getValue()}
+            readOnly
+          />
+        ),
+        size: 250,
+      },
+
       {
         accessorKey: "PParcial",
         header: "Monto Cobrado",
@@ -320,19 +392,12 @@ ${horario}`;
         size: 100,
       },
       {
-        accessorKey: "items",
-        header: "Items",
+        accessorKey: "FechaRecepcion",
+        header: "Recepcion",
         mantineFilterTextInputProps: {
-          placeholder: "Item",
+          placeholder: "Fecha",
         },
-        Cell: ({ cell }) => (
-          <MultiSelect
-            data={cell.getValue()}
-            value={cell.getValue()}
-            readOnly
-          />
-        ),
-        size: 250,
+        size: 100,
       },
       {
         accessorKey: "Direccion",
@@ -354,15 +419,6 @@ ${horario}`;
             ""
           ),
         size: 200,
-      },
-
-      {
-        accessorKey: "FechaRecepcion",
-        header: "Recepcion",
-        mantineFilterTextInputProps: {
-          placeholder: "Fecha",
-        },
-        size: 100,
       },
       {
         accessorKey: "Location",
@@ -413,44 +469,6 @@ ${horario}`;
           </Box>
         ),
         size: 130,
-      },
-      {
-        accessorKey: "FechaEntrega",
-        header: "Fecha Entrega",
-        //enableSorting: false,
-        mantineFilterTextInputProps: {
-          placeholder: "Fecha",
-        },
-        size: 120,
-      },
-      {
-        accessorKey: "onWaiting",
-        header: "Orden en Espera...",
-        enableColumnFilter: false,
-        Cell: ({ cell }) =>
-          // Wrapped the arrow function with parentheses
-          cell.getValue().stado ? (
-            <Box
-              sx={(theme) => ({
-                backgroundColor: cell.getValue().stadoEntrega
-                  ? theme.colors.blue[9]
-                  : cell.getValue().nDias < 20
-                  ? theme.colors.green[9]
-                  : cell.getValue().nDias >= 21 && cell.getValue().nDias <= 30
-                  ? theme.colors.yellow[9]
-                  : theme.colors.red[9],
-                borderRadius: "4px",
-                color: "#fff",
-                textAlign: "center",
-                padding: "10px 15px",
-              })}
-            >
-              {cell.getValue().showText}
-            </Box>
-          ) : (
-            <span>-</span>
-          ),
-        size: 150,
       },
     ],
     []
