@@ -541,6 +541,9 @@ const Ticket = React.forwardRef((props, ref) => {
                   <h3 className={`${infoOrden.factura ? null : "sf"} estado`}>
                     {sPago?.estado.toUpperCase()}
                   </h3>
+                  {/* <h2 className="points-earned">
+                    Felicidades Ganaste : {parseInt(infoOrden.totalNeto)} puntos
+                  </h2> */}
                   {infoOrden.factura ? (
                     <h2 className="cangeo-factura">
                       Canjear Orden de Servicio por Factura

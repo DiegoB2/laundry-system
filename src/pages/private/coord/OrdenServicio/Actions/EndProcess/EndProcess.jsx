@@ -165,6 +165,7 @@ const EndProcess = ({ IdCliente, onClose }) => {
             fecha: DateCurrent().format4,
             hora: DateCurrent().format3,
           },
+          stateLavado: "ready",
           estadoPrenda: "entregado",
           location: 1,
         },

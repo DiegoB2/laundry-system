@@ -1,12 +1,14 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { Box, MultiSelect, Textarea, Tooltip } from "@mantine/core";
+import { Box, MultiSelect, Text, Textarea, Tooltip } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
 import { MantineReactTable } from "mantine-react-table";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { modals } from "@mantine/modals";
 import Portal from "../../../../../components/PRIVATE/Portal/Portal";
 import Detalle from "../../../../../utils/img/Otros/detalle.png";
 import DetalleM from "../../../../../utils/img/Otros/detalleM.png";
@@ -27,6 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { GetOrdenServices_DateRange } from "../../../../../redux/actions/aOrdenServices";
 import { GetMetas } from "../../../../../redux/actions/aMetas";
 import {
+  LS_updateOrder,
   setLastRegister,
   setOrderServiceId,
 } from "../../../../../redux/states/service_order";
@@ -42,6 +45,10 @@ import {
   tipoMoneda,
 } from "../../../../../services/global";
 import { useRef } from "react";
+import { WSendMessage } from "../../../../../services/default.services";
+import { Notify } from "../../../../../utils/notify/Notify";
+import { socket } from "../../../../../utils/socket/connect";
+import axios from "axios";
 
 const List = () => {
   //Filtros de Fecha
@@ -54,6 +61,8 @@ const List = () => {
   const dispatch = useDispatch();
 
   const InfoUsuario = useSelector((state) => state.user.infoUsuario);
+  const InfoNegocio = useSelector((state) => state.negocio.infoNegocio);
+
   const { registered } = useSelector((state) => state.orden);
 
   const [infoRegistrado, setInfoRegistrado] = useState([]);
@@ -69,6 +78,39 @@ const List = () => {
   const iDelivery = useSelector((state) => state.servicios.serviceDelivery);
 
   const infoMetas = useSelector((state) => state.metas.infoMetas);
+
+  const openModal = (value, id) => {
+    modals.openConfirmModal({
+      title: "Reserva de Pedido",
+      centered: true,
+      children: (
+        <Text size="sm">
+          ¿ Estas seguro de cambiar el estado a&nbsp;
+          {value === "ready" ? "LISTO" : "PROCESANDO"} ?
+        </Text>
+      ),
+      labels: { confirm: "Si", cancel: "No" },
+      confirmProps: { color: "yellow" },
+      onConfirm: async () => {
+        try {
+          const response = await axios.post(
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/api/lava-ya/change-state-lavado/${id}/${value}`
+          );
+
+          socket.emit("client:updateOrder", { orderUpdated: response.data });
+          dispatch(LS_updateOrder(response.data));
+
+          Notify("Actualizacion de Estado Exitoso", "", "success");
+          return response.data;
+        } catch (error) {
+          Notify("No se pudo Actualizar el Estado", "", "fail");
+          throw new Error(`No se pudo Actualizar el Estado - ${error}`);
+        }
+      },
+    });
+  };
 
   const columns = useMemo(
     () => [
@@ -91,6 +133,77 @@ const List = () => {
         size: 200,
       },
       {
+        accessorKey: "stateLavado",
+        header: "Estado",
+        filterVariant: "select",
+        mantineFilterSelectProps: {
+          data: [
+            {
+              value: "inProgress",
+              label: "PROCESANDO",
+            },
+            {
+              value: "Ready",
+              label: "LISTO",
+            },
+          ],
+        },
+        mantineFilterTextInputProps: {
+          placeholder: "Estado",
+        },
+        Cell: ({ cell, row }) => {
+          const value = cell.getValue();
+          const iRow = row.original;
+          return (
+            <div className="cell-state">
+              {value === "ready" ? (
+                <button
+                  className="cancel-state"
+                  onClick={() => {
+                    openModal("inProgress", iRow.Id);
+                  }}
+                >
+                  <i className="fa-solid fa-x"></i>
+                </button>
+              ) : null}
+
+              <Box
+                className="btn-state-lavado"
+                sx={() => ({
+                  backgroundColor: value === "ready" ? "#ffbf2e" : "#6582ff",
+                  borderRadius: "4px",
+                  fontWeight: "700",
+                  color: "#fff",
+                  textAlign: "center",
+                  padding: "10px 15px",
+                  "&:hover": {
+                    backgroundColor: value === "ready" ? "#ffa500" : "#4169e1",
+                    cursor: "pointer",
+                  },
+                })}
+                onClick={() => {
+                  if (value === "ready") {
+                    const number = iRow.Celular;
+
+                    if (number) {
+                      const mensaje = `¡Hola ! *${iRow.Nombre}*, le saluda la *Lavanderia ${InfoNegocio.name}* para informarle que sus servicio de lavado ya esta listo y ya puede venir a recogerlo.`;
+                      WSendMessage(mensaje, number);
+                    } else {
+                      Notify("Cliente sin numero", "", "fail");
+                    }
+                  } else {
+                    openModal("ready", iRow.Id);
+                  }
+                }}
+              >
+                {value === "inProgress" ? "PROCESANDO" : "LISTO"}
+              </Box>
+            </div>
+          );
+        },
+        size: 150,
+      },
+      {
         accessorKey: "DNI",
         header: documento,
         //enableSorting: false,
@@ -108,6 +221,7 @@ const List = () => {
         },
         size: 100,
       },
+
       // {
       //   accessorKey: "Modalidad",
       //   header: "Modalidad",
@@ -288,7 +402,6 @@ const List = () => {
         },
         size: 120,
       },
-
       {
         accessorKey: "onWaiting",
         header: "Orden en Espera...",
@@ -348,6 +461,7 @@ const List = () => {
           Nombre: d.Nombre,
           Modalidad: d.Modalidad,
           items: handleItemsCantidad(listItems),
+          stateLavado: d.stateLavado,
           PParcial: estadoPago.pago,
           Pago: estadoPago.estado,
           totalNeto: d.totalNeto,

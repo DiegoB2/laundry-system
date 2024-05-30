@@ -141,7 +141,6 @@
     padding: 0;
     align-items: flex-start;
     justify-content: center;
-
     ::-webkit-scrollbar {
       width: 12px; /* Ancho del scrollbar vertical */
       height: 20px; /* Altura del scrollbar horizontal */
@@ -161,6 +160,30 @@
       margin: auto 0;
       @media (max-width: 768px) {
         display: none; // Ocultar el elemento en dispositivos móviles
+      }
+    }
+    .cell-state {
+      position: relative;
+      .cancel-state {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 12px;
+        width: 12px;
+        display: flex;
+        place-items: center;
+        place-content: center;
+        background: #3a3a3a;
+        color: #fff;
+        border-radius: 1px;
+        outline: none;
+        border: none;
+        i {
+          font-size: 7px;
+        }
+        &:hover {
+          background: #c92a2a;
+        }
       }
     }
   }
