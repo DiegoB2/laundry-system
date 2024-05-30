@@ -38,12 +38,7 @@ import EndProcess from "../Actions/EndProcess/EndProcess";
 import Details from "../Details/Details";
 import BarProgress from "../../../../../components/PRIVATE/BarProgress/BarProgress";
 import { Roles } from "../../../../../models";
-import {
-  confMoneda,
-  documento,
-  simboloMoneda,
-  tipoMoneda,
-} from "../../../../../services/global";
+import { documento, simboloMoneda } from "../../../../../services/global";
 import { useRef } from "react";
 import { WSendMessage } from "../../../../../services/default.services";
 import { Notify } from "../../../../../utils/notify/Notify";
@@ -183,13 +178,36 @@ const List = () => {
                 })}
                 onClick={() => {
                   if (value === "ready") {
+                    const horario = InfoNegocio.horario
+                      .map((item) => `• *${item.horario}*`)
+                      .join("\n");
                     const number = iRow.Celular;
 
                     if (number) {
-                      const mensaje = `¡Hola ! *${iRow.Nombre}*, le saluda la *Lavanderia ${InfoNegocio.name}* para informarle que sus servicio de lavado ya esta listo y ya puede venir a recogerlo.`;
+                      const mensaje = `Hola! *${iRow.Nombre}* 👋
+Le saluda la *LAVANDERÍA ${InfoNegocio.name}* 😃
+                                      
+Le informo que ya está *LISTO* 👍 su pedido${
+                        iRow.Pago !== "Completo"
+                          ? ` ${
+                              iRow.Pago === "Pendiente"
+                                ? `con monto a pagar de *${iRow.totalNeto}*`
+                                : `con un monto pendiente de *${formatThousandsSeparator(
+                                    iRow.totalNeto - iRow.PParcial,
+                                    true
+                                  )}*`
+                            }`
+                          : "."
+                      } 
+Puede pasar a recogerlo ahora 😃
+Su orden es *#${iRow.Recibo}* ✏
+                                      
+*RECUERDA* que el horario de atención es:
+${horario}`;
+
                       WSendMessage(mensaje, number);
                     } else {
-                      Notify("Cliente sin numero", "", "fail");
+                      Notify("Cliente sin número", "", "fail");
                     }
                   } else {
                     openModal("ready", iRow.Id);
