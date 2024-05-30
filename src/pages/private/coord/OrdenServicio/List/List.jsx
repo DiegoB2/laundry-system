@@ -191,7 +191,10 @@ Le informo que ya está *LISTO* 👍 su pedido${
                         iRow.Pago !== "Completo"
                           ? ` ${
                               iRow.Pago === "Pendiente"
-                                ? `con monto a pagar de *${iRow.totalNeto}*`
+                                ? `con monto a pagar de *${formatThousandsSeparator(
+                                    iRow.totalNeto,
+                                    true
+                                  )}*`
                                 : `con un monto pendiente de *${formatThousandsSeparator(
                                     iRow.totalNeto - iRow.PParcial,
                                     true
