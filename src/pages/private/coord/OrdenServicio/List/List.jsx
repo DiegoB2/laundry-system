@@ -285,8 +285,8 @@ ${horario}`;
       //   size: 100,
       // },
       {
-        accessorKey: "FechaEntrega",
-        header: "Fecha Entrega",
+        accessorKey: "FechaPrevista",
+        header: "Fecha Prevista",
         //enableSorting: false,
         mantineFilterTextInputProps: {
           placeholder: "Fecha",
@@ -337,7 +337,6 @@ ${horario}`;
         ),
         size: 250,
       },
-
       {
         accessorKey: "PParcial",
         header: "Monto Cobrado",
@@ -512,6 +511,7 @@ ${horario}`;
           Descuento: d.descuento,
           Location: d.location,
           EstadoPrenda: d.estadoPrenda,
+          FechaPrevista: d.datePrevista.fecha,
           Estado: d.estado,
           Notas: d.notas,
           onWaiting: onWaiting,
