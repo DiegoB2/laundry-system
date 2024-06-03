@@ -163,9 +163,8 @@ export const handleRemoveFStorage = async (id) => {
 // };
 
 export const WSendMessage = (mensaje, phone) => {
-  const webUrl = `whatsapp://send?phone=${phone}&text=${encodeURIComponent(
-    mensaje
-  )}`;
+  let webUrl;
+  webUrl = `whatsapp://send?phone=${phone}&text=${encodeURIComponent(mensaje)}`;
 
   window.open(webUrl, "_blank");
 };

@@ -39,7 +39,7 @@ import EndProcess from "../Actions/EndProcess/EndProcess";
 import Details from "../Details/Details";
 import BarProgress from "../../../../../components/PRIVATE/BarProgress/BarProgress";
 import { Roles } from "../../../../../models";
-import { documento, simboloMoneda } from "../../../../../services/global";
+import { documento } from "../../../../../services/global";
 import { useRef } from "react";
 import { WSendMessage } from "../../../../../services/default.services";
 import { Notify } from "../../../../../utils/notify/Notify";
