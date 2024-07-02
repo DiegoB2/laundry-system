@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Notify } from "../utils/notify/Notify";
+import { codigoPhonePais } from "./global";
 const baseURL = `${import.meta.env.VITE_BACKEND_URL}/api/lava-ya`;
 
 export const handleAddCliente = async (info) => {
@@ -151,10 +152,9 @@ export const handleRemoveFStorage = async (id) => {
 
 export const WSendMessage = (mensaje, phone) => {
   let webUrl;
-  webUrl = `whatsapp://send?phone=${phone.replace(
-    /\s/g,
-    ""
-  )}&text=${encodeURIComponent(mensaje)}`;
+  webUrl = `whatsapp://send?phone=${
+    codigoPhonePais + `${phone.replace(/\s/g, "")}`
+  }&text=${encodeURIComponent(mensaje)}`;
 
   window.open(webUrl, "_blank");
 };
