@@ -130,7 +130,7 @@ const OrdenServicio = ({ mode, onAction, infoDefault, titleMode }) => {
       direccion: "",
       celular: "",
       dateRecojo: new Date(),
-      datePrevista: new Date(),
+      datePrevista: moment().add(1, "days").toDate(),
       dayhour: defaultHoraPrevista,
       Items: [],
       descuento: 0,

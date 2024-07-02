@@ -157,11 +157,7 @@ const Ticket = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     if (infoOrden) {
-      if (
-        infoOrden.descuento > 0 &&
-        infoOrden.idCliente &&
-        infoOrden.modoDescuento === "Puntos"
-      ) {
+      if (infoOrden.idCliente) {
         const infoCliente = ListClientes.find(
           (cliente) => cliente._id === infoOrden.idCliente
         );
@@ -529,9 +525,14 @@ const Ticket = React.forwardRef((props, ref) => {
                   <h3 className={`${infoOrden.factura ? null : "sf"} estado`}>
                     {sPago?.estado.toUpperCase()}
                   </h3>
-                  {/* <h2 className="points-earned">
-                    Felicidades Ganaste : {parseInt(infoOrden.totalNeto)} puntos
-                  </h2> */}
+                  {+infoOrden?.descuento >= 0 &&
+                  infoOrden?.modoDescuento === "Promocion" &&
+                  infoPuntosCli?.scoreTotal !== 0 ? (
+                    <h2 className="points-earned">
+                      Puntos Acumulados : {parseInt(infoPuntosCli?.scoreTotal)}
+                    </h2>
+                  ) : null}
+
                   {infoOrden.factura ? (
                     <h2 className="cangeo-factura">
                       Canjear Orden de Servicio por Factura
