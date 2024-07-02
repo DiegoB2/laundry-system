@@ -4,7 +4,9 @@ import { Navigate, Route } from "react-router-dom";
 import { PrivateRoutes, Roles } from "../../models/index";
 
 import {
+  AnularReplace,
   EditOrdenService,
+  FinishReserva,
   ListOrdenService,
 } from "../../pages/private/coord/index";
 
@@ -47,6 +49,7 @@ import SCategorias from "../../pages/private/admin/Setting/Categorias/Categorias
 import Personal from "../../pages/private/coord/Personal/Personal";
 import Asistencia from "../../pages/private/coord/Personal/Asistencia/Asistencia";
 import NewDesignList from "../../pages/private/coord/OrdenServicio/List/NewDesignList";
+import Clientes from "../../pages/private/admin/Clientes/Clientes";
 
 const Private = () => {
   return (
@@ -65,7 +68,12 @@ const Private = () => {
         {/* PAGES ADMINISTRADOR O PAGES GERENTE */}
         <Route element={<RoleGuard rol={Roles.GERENTE} />}>
           <Route path={PrivateRoutes.PROMOCIONES} element={<Promociones />} />
-          {/* <Route path={PrivateRoutes.GRAFICOS} element={<Graficos />} /> */}
+          <Route path={PrivateRoutes.CLIENTES} element={<Clientes />} />
+          <Route
+            path={`${PrivateRoutes.ASISTENCIA}/:id`}
+            element={<Asistencia />}
+          />
+          <Route path={`${PrivateRoutes.PERSONAL}`} element={<Personal />} />
           <Route path={PrivateRoutes.SETTING} element={<Setting />} />
           <Route path={PrivateRoutes.SETTING_USERS} element={<SUsuarios />} />
           <Route path={PrivateRoutes.SETTING_BUSINESS} element={<SNegocio />} />
@@ -111,11 +119,6 @@ const Private = () => {
         {/* PAGES COORDINADOR */}
         <Route element={<RoleGuard rol={Roles.COORD} />}>
           <Route
-            path={`${PrivateRoutes.ASISTENCIA}/:id`}
-            element={<Asistencia />}
-          />
-          <Route path={`${PrivateRoutes.PERSONAL}`} element={<Personal />} />
-          <Route
             path={`${PrivateRoutes.EDIT_ORDER_SERVICE}/:id`}
             element={<EditOrdenService />}
           />
@@ -129,7 +132,11 @@ const Private = () => {
           />
           <Route
             path={`${PrivateRoutes.FINISH_ORDEN_SERVICE_PENDING}/:id`}
-            element={<EditOrdenService />}
+            element={<FinishReserva />}
+          />
+          <Route
+            path={`${PrivateRoutes.ANULAR_REMPLAZAR}/:id`}
+            element={<AnularReplace />}
           />
           <Route
             path={`${PrivateRoutes.IMPRIMIR_ORDER_SERVICE}/:id`}

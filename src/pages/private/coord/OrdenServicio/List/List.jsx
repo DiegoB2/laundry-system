@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
@@ -30,9 +29,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { GetOrdenServices_DateRange } from "../../../../../redux/actions/aOrdenServices";
 import { GetMetas } from "../../../../../redux/actions/aMetas";
 import {
-  LS_updateOrder,
+  updateStateLavadoOrden,
   setLastRegister,
-  setOrderServiceId,
 } from "../../../../../redux/states/service_order";
 
 import EndProcess from "../Actions/EndProcess/EndProcess";
@@ -58,7 +56,6 @@ const List = () => {
 
   const InfoUsuario = useSelector((state) => state.user.infoUsuario);
   const InfoNegocio = useSelector((state) => state.negocio.infoNegocio);
-
   const { registered } = useSelector((state) => state.orden);
 
   const [infoRegistrado, setInfoRegistrado] = useState([]);
@@ -74,7 +71,6 @@ const List = () => {
   const iDelivery = useSelector((state) => state.servicios.serviceDelivery);
 
   const infoMetas = useSelector((state) => state.metas.infoMetas);
-
   const openModal = (value, id) => {
     modals.openConfirmModal({
       title: "Reserva de Pedido",
@@ -96,7 +92,7 @@ const List = () => {
           );
 
           socket.emit("client:updateOrder", { orderUpdated: response.data });
-          dispatch(LS_updateOrder(response.data));
+          dispatch(updateStateLavadoOrden(response.data));
 
           Notify("Actualizacion de Estado Exitoso", "", "success");
           return response.data;
@@ -107,7 +103,6 @@ const List = () => {
       },
     });
   };
-
   const handleSendM = (iRow) => {
     const horario = InfoNegocio.horario
       .map((item) => `• *${item.horario}*`)
@@ -144,7 +139,6 @@ ${horario}`;
       Notify("Cliente sin número", "", "fail");
     }
   };
-
   const columns = useMemo(
     () => [
       {
@@ -645,7 +639,6 @@ ${horario}`;
   };
 
   useEffect(() => {
-    dispatch(setOrderServiceId(false));
     dispatch(setLastRegister());
   }, []);
 
