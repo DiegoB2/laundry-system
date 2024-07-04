@@ -304,6 +304,7 @@ const service_order = createSlice({
 
         if (index !== -1) {
           const updatedOrder = state.registered[index];
+          updatedOrder.stateLavado = action.payload.stateLavado;
           updatedOrder.estadoPrenda = action.payload.estadoPrenda;
           updatedOrder.location = action.payload.location;
           updatedOrder.dateEntrega = action.payload.dateEntrega;
