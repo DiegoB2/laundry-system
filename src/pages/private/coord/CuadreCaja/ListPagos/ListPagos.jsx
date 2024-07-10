@@ -327,35 +327,43 @@ const ListPagos = ({
             </div>
           </div>
         ) : null}
-        {iClienteTransferencia.length > 0 ? (
-          <div className="transferencia tb-info">
-            <span>{ingresoDigital}</span>
-
-            <div className="paid-orders-tranf">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Codigo</th>
-                    <th>Modalidad</th>
-                    <th>Nombre</th>
-                    <th>Monto</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {iClienteTransferencia
-                    .sort((a, b) => parseInt(a.orden) - parseInt(b.orden))
-                    .map((cliente, index) => (
-                      <tr key={index}>
-                        <td>{cliente.orden}</td>
-                        <td>{cliente.Modalidad}</td>
-                        <td>{cliente.nombre}</td>
-                        <td>{formatThousandsSeparator(cliente.total)}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+        {iClienteTransferencia ? (
+          <>
+            {Object.keys(iClienteTransferencia).map(
+              (tipoTransferencia, index) =>
+                iClienteTransferencia[tipoTransferencia].length > 0 ? (
+                  <div className="transferencia tb-info" key={index}>
+                    <span>{tipoTransferencia.toLocaleUpperCase()}</span>
+                    <div className="paid-orders-tranf">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Código</th>
+                            <th>Modalidad</th>
+                            <th>Nombre</th>
+                            <th>Monto</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {iClienteTransferencia[tipoTransferencia].map(
+                            (cliente, idx) => (
+                              <tr key={idx}>
+                                <td>{cliente.orden}</td>
+                                <td>{cliente.Modalidad}</td>
+                                <td>{cliente.nombre}</td>
+                                <td>
+                                  {formatThousandsSeparator(cliente.total)}
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : null
+            )}
+          </>
         ) : null}
         {iClienteTarjeta.length > 0 ? (
           <div className="tarjeta tb-info">

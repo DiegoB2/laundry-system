@@ -5,13 +5,15 @@ export const defaultHoraPrevista = "18:00";
 // Factura
 export const showFactura = false;
 export const impOnPrice = true;
+// Mostrar Cuantos Puntos tiene el Cliente
+export const showPuntosOnTicket = true;
 // Tipo de Moneda
 export const tipoMoneda = "PEN";
 // Formato de la moneda (separacion de miles - decimales) segun la configuracion regional
 export const confMoneda = "es-PE";
 export const simboloMoneda = "S/";
 export const nameMoneda = "Soles";
-export const ingresoDigital = "YAPE";
+export const ingresoDigital = ["YAPE"];
 
 export const politicaAbandono = {
   mResaltado: "El plazo máximo para retirar las prendas es de 30 días ",

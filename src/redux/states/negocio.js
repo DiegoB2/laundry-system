@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { UpdateInfoNegocio, GetInfoNegocio } from '../actions/aNegocio';
+import { createSlice } from "@reduxjs/toolkit";
+import { UpdateInfoNegocio, GetInfoNegocio } from "../actions/aNegocio";
 
 const negocio = createSlice({
-  name: 'negocio',
+  name: "negocio",
   initialState: {
     infoNegocio: {},
     isLoading: false,

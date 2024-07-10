@@ -6,11 +6,13 @@ import {
   CancelEntrega_OrdenService,
   Entregar_OrdenService,
   FinalzarReservaOrdenService,
+  GetOrdenServices_Date,
   GetOrdenServices_DateRange,
   Nota_OrdenService,
   UpdateDetalleOrdenServices,
 } from "../actions/aOrdenServices";
 import { handleGetInfoPago } from "../../utils/functions";
+import moment from "moment";
 
 const service_order = createSlice({
   name: "service_order",
@@ -20,10 +22,26 @@ const service_order = createSlice({
     reserved: [],
     lastRegister: null,
     orderServiceId: false,
+    // filtros
+    filterBy: "date",
+    searhOptionByDate: "latest",
+    selectedMonth: moment().subtract(2, "months").toDate(),
+    // ----------------- //
     isLoading: false,
     error: null,
   },
   reducers: {
+    // Filtros
+    setFilterBy: (state, action) => {
+      state.filterBy = action.payload;
+    },
+    setSearchOptionByDate: (state, action) => {
+      state.searhOptionByDate = action.payload;
+    },
+    setSelectedMonth: (state, action) => {
+      state.selectedMonth = action.payload;
+    },
+    // ----------------------------------------- //
     updateLastRegister: (state, action) => {
       state.lastRegister = {
         ...state.lastRegister,
@@ -351,6 +369,7 @@ const service_order = createSlice({
         if (index !== -1) {
           const updatedOrder = state.registered[index];
           updatedOrder.estadoPrenda = action.payload.estadoPrenda;
+          updatedOrder.stateLavado = action.payload.stateLavado;
         }
       })
       .addCase(Anular_OrdenService.rejected, (state, action) => {
@@ -427,6 +446,27 @@ const service_order = createSlice({
         state.isLoading = false;
         state.infoServiceOrder = false;
         state.error = action.error.message;
+      })
+      // List for Date
+      .addCase(GetOrdenServices_Date.pending, (state) => {
+        state.isLoading = true;
+        state.infoServiceOrder = false;
+        state.error = null;
+      })
+      .addCase(GetOrdenServices_Date.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.infoServiceOrder = action.payload.length > 0;
+        state.reserved = action.payload.filter(
+          (item) => item.estado === "reservado"
+        );
+        state.registered = action.payload.filter(
+          (item) => item.estado === "registrado"
+        );
+      })
+      .addCase(GetOrdenServices_Date.rejected, (state, action) => {
+        state.isLoading = false;
+        state.infoServiceOrder = false;
+        state.error = action.error.message;
       });
   },
 });
@@ -445,5 +485,9 @@ export const {
   LS_updateListOrder,
   LS_changeListPago,
   LS_changePagoOnOrden,
+  // Filter
+  setFilterBy,
+  setSearchOptionByDate,
+  setSelectedMonth,
 } = service_order.actions;
 export default service_order.reducer;

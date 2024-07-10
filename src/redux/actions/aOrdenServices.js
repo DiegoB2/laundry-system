@@ -11,7 +11,27 @@ export const GetOrdenServices_DateRange = createAsyncThunk(
       const response = await axios.get(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/lava-ya/get-factura/date/${dateInicio}/${dateFin}`
+        }/api/lava-ya/get-factura/date-range/${dateInicio}/${dateFin}`
+      );
+
+      return response.data;
+    } catch (error) {
+      // Puedes manejar los errores aquí
+      //Notify('Error', 'No se ontemer la lista de Ordenes de Servicio', 'fail');
+      console.log(error.response.data.mensaje);
+      throw new Error(`No se pudo actualizar el cliente - ${error}`);
+    }
+  }
+);
+
+export const GetOrdenServices_Date = createAsyncThunk(
+  "service_order/GetOrdenServices_Date",
+  async (date) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/lava-ya/get-factura/date/${date}`
       );
 
       return response.data;

@@ -19,6 +19,7 @@ import {
   impOnPrice,
   nameImpuesto,
   politicaAbandono,
+  showPuntosOnTicket,
 } from "../../../../../../../services/global";
 import { useSelector } from "react-redux";
 import { Notify } from "../../../../../../../utils/notify/Notify";
@@ -156,13 +157,11 @@ const Ticket = React.forwardRef((props, ref) => {
   }, [infoOrden]);
 
   useEffect(() => {
-    if (infoOrden) {
-      if (infoOrden.idCliente) {
-        const infoCliente = ListClientes.find(
-          (cliente) => cliente._id === infoOrden.idCliente
-        );
-        setInfoPuntosCli(infoCliente);
-      }
+    if (infoOrden?.idCliente) {
+      const infoCliente = ListClientes.find(
+        (cliente) => cliente._id === infoOrden.idCliente
+      );
+      setInfoPuntosCli(infoCliente);
     }
   }, [infoOrden, ListClientes]);
 
@@ -201,12 +200,12 @@ const Ticket = React.forwardRef((props, ref) => {
                   <table className="info-table">
                     <tbody>
                       <tr>
-                        <td>Direccion:</td>
+                        <td>DIRECCION :</td>
                         <td>{InfoNegocio?.direccion}</td>
                       </tr>
                       {InfoNegocio.contacto.length > 0 ? (
                         <tr>
-                          <td>Telefono:</td>
+                          <td>TELEFONO :</td>
                           <td className="u-line">
                             {InfoNegocio.contacto.map((num, index) => (
                               <span key={index}>
@@ -220,7 +219,7 @@ const Ticket = React.forwardRef((props, ref) => {
                         </tr>
                       ) : null}
                       <tr>
-                        <td>Horario:</td>
+                        <td>HORARIO :</td>
                         <td className="m-line">
                           {InfoNegocio.horario.map((hor, index) => (
                             <span key={index}>{hor.horario}</span>
@@ -245,7 +244,7 @@ const Ticket = React.forwardRef((props, ref) => {
                 <table className="tb-date">
                   <tbody>
                     <tr>
-                      <td>Ingreso:</td>
+                      <td>INGRESO :</td>
                       <td>
                         <div className="date-time">
                           {sizePaper80 ? (
@@ -279,7 +278,7 @@ const Ticket = React.forwardRef((props, ref) => {
                       </td>
                     </tr>
                     <tr>
-                      <td>Entrega:</td>
+                      <td>ENTREGA :</td>
                       <td>
                         <div className="date-time">
                           {sizePaper80 ? (
@@ -323,18 +322,18 @@ const Ticket = React.forwardRef((props, ref) => {
                     <tbody>
                       {infoOrden.direccion ? (
                         <tr className="f-direccion">
-                          <td>Direccion : </td>
+                          <td>DIRECCION : </td>
                           <td>&nbsp;&nbsp;{infoOrden.direccion}</td>
                         </tr>
                       ) : null}
                       {infoOrden.celular ? (
                         <tr className="f-telf">
-                          <td>Telefono : </td>
+                          <td>TELEFONO : </td>
                           <td>&nbsp;&nbsp;{infoOrden.celular}</td>
                         </tr>
                       ) : null}
                       <tr className="f-attend">
-                        <td>Atentido por : </td>
+                        <td>ATENDIDO POR : </td>
                         <td>&nbsp;&nbsp;{infoOrden.attendedBy.name}</td>
                       </tr>
                     </tbody>
@@ -348,11 +347,11 @@ const Ticket = React.forwardRef((props, ref) => {
                   <thead>
                     <tr>
                       <th></th>
-                      <th>Item</th>
-                      <th>Cantidad</th>
+                      <th>ITEM</th>
+                      <th>CANTIDAD</th>
                       {!tipoTicket ? (
                         <>
-                          <th>Total</th>
+                          <th>TOTAL</th>
                         </>
                       ) : null}
                     </tr>
@@ -388,7 +387,7 @@ const Ticket = React.forwardRef((props, ref) => {
                   {!tipoTicket ? (
                     <tfoot>
                       <tr>
-                        <td colSpan="3">Subtotal :</td>
+                        <td colSpan="3">SUBTOTAL :</td>
                         <td>
                           {impOnPrice
                             ? formatThousandsSeparator(
@@ -405,7 +404,7 @@ const Ticket = React.forwardRef((props, ref) => {
                       </tr>
                       {infoOrden?.Modalidad === "Delivery" ? (
                         <tr>
-                          <td colSpan="3">Delivery :</td>
+                          <td colSpan="3">DELIVERY :</td>
                           <td>{montoDelivery()}</td>
                         </tr>
                       ) : null}
@@ -432,7 +431,7 @@ const Ticket = React.forwardRef((props, ref) => {
                         </tr>
                       )}
                       <tr>
-                        <td colSpan="3">Descuento :</td>
+                        <td colSpan="3">DESCUENTO :</td>
                         <td>
                           {infoOrden.descuento
                             ? formatThousandsSeparator(infoOrden.descuento)
@@ -440,17 +439,17 @@ const Ticket = React.forwardRef((props, ref) => {
                         </td>
                       </tr>
                       <tr>
-                        <td colSpan="3">Total a Pagar :</td>
+                        <td colSpan="3">TOTAL A PAGAR :</td>
                         <td>{formatThousandsSeparator(infoOrden.totalNeto)}</td>
                       </tr>
                       {sPago?.estado === "Incompleto" ? (
                         <>
                           <tr>
-                            <td colSpan="3">A Cuenta :</td>
+                            <td colSpan="3">A CUENTA :</td>
                             <td>{formatThousandsSeparator(sPago?.pago)}</td>
                           </tr>
                           <tr>
-                            <td colSpan="3">Deuda Pendiente :</td>
+                            <td colSpan="3">DEUDA PENDIENTE :</td>
                             <td>{formatThousandsSeparator(sPago?.falta)}</td>
                           </tr>
                         </>
@@ -525,14 +524,14 @@ const Ticket = React.forwardRef((props, ref) => {
                   <h3 className={`${infoOrden.factura ? null : "sf"} estado`}>
                     {sPago?.estado.toUpperCase()}
                   </h3>
-                  {+infoOrden?.descuento >= 0 &&
+                  {showPuntosOnTicket &&
+                  +infoOrden?.descuento >= 0 &&
                   infoOrden?.modoDescuento === "Promocion" &&
                   infoPuntosCli?.scoreTotal !== 0 ? (
                     <h2 className="points-earned">
                       Puntos Acumulados : {parseInt(infoPuntosCli?.scoreTotal)}
                     </h2>
                   ) : null}
-
                   {infoOrden.factura ? (
                     <h2 className="cangeo-factura">
                       Canjear Orden de Servicio por Factura
@@ -597,7 +596,7 @@ const Ticket = React.forwardRef((props, ref) => {
                   <table className="tb-date">
                     <tbody>
                       <tr>
-                        <td>Ingreso:</td>
+                        <td>INGRESO :</td>
                         <td>
                           <div className="date-time">
                             {sizePaper80 ? (
@@ -631,7 +630,7 @@ const Ticket = React.forwardRef((props, ref) => {
                         </td>
                       </tr>
                       <tr>
-                        <td>Entrega:</td>
+                        <td>ENTREGA :</td>
                         <td>
                           <div className="date-time">
                             {sizePaper80 ? (
@@ -668,25 +667,25 @@ const Ticket = React.forwardRef((props, ref) => {
                   </table>
                   <div className="i-cliente">
                     <div className="h-cli">
-                      <span>Nombres del Cliente</span>
+                      <span>NOMBRE DEL CLIENTE</span>
                       <h2>{infoOrden.Nombre}</h2>
                     </div>
                     <table className="tb-info-cliente">
                       <tbody>
                         {infoOrden.direccion ? (
                           <tr className="f-direccion">
-                            <td>Direccion : </td>
+                            <td>DIRECCION : </td>
                             <td>&nbsp;&nbsp;{infoOrden.direccion}</td>
                           </tr>
                         ) : null}
                         {infoOrden.celular ? (
                           <tr className="f-telf">
-                            <td>Telefono : </td>
+                            <td>TELEFONO : </td>
                             <td>&nbsp;&nbsp;{infoOrden.celular}</td>
                           </tr>
                         ) : null}
                         <tr className="f-attend">
-                          <td>Atentido por : </td>
+                          <td>ATENDIDO POR : </td>
                           <td>&nbsp;&nbsp;{infoOrden.attendedBy.name}</td>
                         </tr>
                       </tbody>
@@ -700,8 +699,8 @@ const Ticket = React.forwardRef((props, ref) => {
                     <thead>
                       <tr>
                         <th></th>
-                        <th>Item</th>
-                        <th>Cantidad</th>
+                        <th>ITEM</th>
+                        <th>CANTIDAD</th>
                       </tr>
                     </thead>
                     <tbody>

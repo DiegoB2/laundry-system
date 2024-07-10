@@ -18,6 +18,7 @@ import {
   LS_changePagoOnOrden,
   LS_newOrder,
   LS_updateListOrder,
+  setFilterBy,
   updateAnulacionOrden,
   updateCancelarEntregaOrden,
   updateDetalleOrden,
@@ -77,6 +78,10 @@ const PrivateMasterLayout = (props) => {
   ] = useDisclosure(false);
 
   const InfoUsuario = useSelector((store) => store.user.infoUsuario);
+  const { filterListDefault } = useSelector(
+    (state) => state.negocio.infoNegocio
+  );
+
   const [data, setData] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -187,6 +192,10 @@ const PrivateMasterLayout = (props) => {
       }
     });
   }, [reserved]);
+
+  useEffect(() => {
+    dispatch(setFilterBy(filterListDefault));
+  }, [filterListDefault]);
 
   useEffect(() => {
     // ORDEN ADD
