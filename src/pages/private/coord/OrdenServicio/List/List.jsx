@@ -728,7 +728,7 @@ ${horario}`;
                   dispatch(setSearchOptionByDate("latest"));
                   dispatch(setFilterBy(option));
                 }}
-                colorOn="#5bc97d"
+                colorOn="goldenrod"
                 // colorOff=""
                 // disabled=""
               />
@@ -749,7 +749,7 @@ ${horario}`;
                       value === "MESES ANTERIORES" ? "selected" : "latest";
                     handleValidarConsulta(option);
                   }}
-                  colorOn="#5bc97d"
+                  colorOn="goldenrod"
                   // colorOff=""
                   // disabled=""
                 />
