@@ -716,7 +716,7 @@ const Ticket = React.forwardRef((props, ref) => {
                               {p.simboloMedida}
                             </td>
                           </tr>
-                          {showDescripcion && p.descripcion ? (
+                          {p.descripcion ? (
                             <tr className="fila_descripcion">
                               <td colSpan={!tipoTicket ? 4 : 3}>
                                 {spaceLine(p.descripcion)}
