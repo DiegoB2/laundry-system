@@ -111,7 +111,10 @@ export const AddOrdenServices = createAsyncThunk(
 
       socket.emit("client:changeOrder", {
         tipo: "add",
-        info: newOrder,
+        info: {
+          ...newOrder,
+          ListPago: newOrder.ListPago.map((pago) => ({ ...pago, infoUser })),
+        },
       });
 
       return {
@@ -223,7 +226,10 @@ export const FinalzarReservaOrdenService = createAsyncThunk(
       const res = response.data;
       const { orderUpdated } = res;
 
-      socket.emit("client:updateOrder(FINISH_RESERVA)", orderUpdated);
+      socket.emit("client:updateOrder(FINISH_RESERVA)", {
+        ...orderUpdated,
+        ListPago: orderUpdated.ListPago.map((pago) => ({ ...pago, infoUser })),
+      });
 
       if ("newPago" in res) {
         const { newPago } = res;

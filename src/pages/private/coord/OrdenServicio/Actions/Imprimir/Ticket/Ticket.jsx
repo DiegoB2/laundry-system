@@ -16,6 +16,7 @@ import { ReactComponent as Logo } from "../../../../../../../utils/img/Logo/logo
 import moment from "moment";
 import axios from "axios";
 import {
+  impOnPrice,
   nameImpuesto,
   politicaAbandono,
   showPuntosOnTicket,
@@ -31,25 +32,11 @@ const Ticket = React.forwardRef((props, ref) => {
   const [sPago, setSPago] = useState();
   const [infoPuntosCli, setInfoPuntosCli] = useState(null);
 
-  const InfoServicios = useSelector((state) => state.servicios.listServicios);
-  const ListClientes = useSelector((state) => state.clientes.listClientes);
-  const InfoCategorias = useSelector(
-    (state) => state.categorias.listCategorias
+  const { InfoImpuesto: iImpuesto } = useSelector(
+    (state) => state.modificadores
   );
-
-  const getInfoDelivery = () => {
-    const ICategory = InfoCategorias.find((cat) => cat.nivel === "primario");
-    const IService = InfoServicios.find(
-      (service) =>
-        service.idCategoria === ICategory._id && service.nombre === "Delivery"
-    );
-
-    return IService;
-  };
-
-  const montoDelivery = () => {
-    return infoOrden.Items.find((p) => p.item === "Delivery")?.total || 0;
-  };
+  const iDelivery = useSelector((state) => state.servicios.serviceDelivery);
+  const ListClientes = useSelector((state) => state.clientes.listClientes);
 
   const calcularFechaFutura = (numeroDeDias) => {
     const fechaActual = moment();
@@ -345,7 +332,7 @@ const Ticket = React.forwardRef((props, ref) => {
                     <tr>
                       <th></th>
                       <th>ITEM</th>
-                      <th>{sizePaper80 ? "CANTIDAD" : "CANT"}</th>
+                      <th>{sizePaper80 ? "CANT" : "CANT"}</th>
                       {!tipoTicket ? (
                         <>
                           <th>TOTAL</th>
@@ -354,9 +341,7 @@ const Ticket = React.forwardRef((props, ref) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {infoOrden.Items.filter(
-                      (p) => p.identificador !== getInfoDelivery()?._id
-                    ).map((p, index) => (
+                    {infoOrden.Items.map((p, index) => (
                       <React.Fragment key={`${infoOrden._id}-${index}`}>
                         <tr
                           className={`${
@@ -365,7 +350,10 @@ const Ticket = React.forwardRef((props, ref) => {
                         >
                           <td>{sizePaper80 ? "• " : ""}</td>
                           <td>{p.item}</td>
-                          <td>{formatThousandsSeparator(p.cantidad)}</td>
+                          <td>
+                            {formatThousandsSeparator(p.cantidad)}{" "}
+                            {p.simboloMedida}
+                          </td>
                           {!tipoTicket ? (
                             <>
                               {infoOrden?.descuento.estado &&
@@ -393,44 +381,23 @@ const Ticket = React.forwardRef((props, ref) => {
                     <tfoot>
                       <tr>
                         <td>Subtotal :</td>
-                        <td>
-                          {infoOrden?.descuento.estado &&
-                          infoOrden?.descuento.info &&
-                          infoOrden?.descuento.modoDescuento === "Manual"
-                            ? formatThousandsSeparator(
-                                infoOrden?.Items.reduce(
-                                  (total, item) =>
-                                    total + parseFloat(item.monto),
-                                  0
-                                )
-                              )
-                            : formatThousandsSeparator(
-                                infoOrden?.subTotal -
-                                  (infoOrden?.Modalidad === "Delivery"
-                                    ? montoDelivery()
-                                    : 0)
-                              )}
-                        </td>
-                      </tr>
-                      {infoOrden?.Modalidad === "Delivery" ? (
-                        <tr>
-                          <td>Delivery :</td>
-                          <td>{montoDelivery()}</td>
-                        </tr>
-                      ) : null}
-                      {infoOrden?.cargosExtras.impuesto.estado ? (
-                        <tr>
-                          <td>
-                            {nameImpuesto} (
-                            {infoOrden?.cargosExtras.impuesto.valor * 100} %) :
-                          </td>
+                        {infoOrden?.descuento.estado &&
+                        infoOrden?.descuento.info &&
+                        infoOrden?.descuento.modoDescuento === "Manual" ? (
                           <td>
                             {formatThousandsSeparator(
-                              infoOrden?.cargosExtras.impuesto.importe
+                              infoOrden?.Items.reduce(
+                                (total, item) => total + parseFloat(item.monto),
+                                0
+                              )
                             )}
                           </td>
-                        </tr>
-                      ) : null}
+                        ) : (
+                          <td>
+                            {formatThousandsSeparator(infoOrden.subTotal)}
+                          </td>
+                        )}
+                      </tr>
                       <tr>
                         <td>Descuento :</td>
                         <td>
@@ -449,10 +416,38 @@ const Ticket = React.forwardRef((props, ref) => {
                               )}
                         </td>
                       </tr>
+                      {infoOrden?.cargosExtras.impuesto.estado ? (
+                        <tr>
+                          <td>
+                            {nameImpuesto} (
+                            {infoOrden?.cargosExtras.impuesto.valor * 100} %) :
+                          </td>
+                          <td>
+                            {formatThousandsSeparator(
+                              infoOrden?.cargosExtras.impuesto.importe
+                            )}
+                          </td>
+                        </tr>
+                      ) : null}
+                      {impOnPrice ? (
+                        <tr>
+                          <td>
+                            <span className="label-igv">{`• APLICADO AL PRECIO`}</span>
+                            &nbsp;-&nbsp;{nameImpuesto} ({iImpuesto.IGV * 100} %
+                            ) :
+                          </td>
+                          <td>
+                            {formatThousandsSeparator(
+                              infoOrden.subTotal * iImpuesto.IGV
+                            )}
+                          </td>
+                        </tr>
+                      ) : null}
                       <tr>
                         <td>Total a pagar :</td>
                         <td>{formatThousandsSeparator(infoOrden.totalNeto)}</td>
                       </tr>
+
                       {sPago?.estado === "Incompleto" ? (
                         <>
                           <tr>
@@ -756,7 +751,7 @@ const Ticket = React.forwardRef((props, ref) => {
                     </thead>
                     <tbody>
                       {infoOrden.Items.filter(
-                        (p) => p.identificador !== getInfoDelivery()?._id
+                        (p) => p.identificador !== iDelivery?._id
                       ).map((p, index) => (
                         <React.Fragment key={`${infoOrden._id}-${index}`}>
                           <tr>

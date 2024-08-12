@@ -26,6 +26,7 @@ export const allowedRoles = [
 
 // Factura
 export const showFactura = false;
+export const impOnPrice = true;
 // Mostrar Cuantos Puntos tiene el Cliente
 export const showPuntosOnTicket = true;
 // Tipo de Moneda

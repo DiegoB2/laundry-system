@@ -177,6 +177,9 @@ $capitalizacion: lowercase;
           thead,
           tbody,
           tfoot {
+            .label-igv {
+              font-size: 12px;
+            }
             tr {
               display: grid;
               grid-template-columns: 5mm auto 20mm 14mm;
