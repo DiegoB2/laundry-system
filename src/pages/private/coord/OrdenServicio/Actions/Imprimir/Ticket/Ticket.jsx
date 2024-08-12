@@ -428,7 +428,6 @@ const Ticket = React.forwardRef((props, ref) => {
                       {impOnPrice ? (
                         <tr>
                           <td>
-                            {console.log(infoOrden?.cargosExtras)}
                             <span className="label-igv">{`• APLICADO AL PRECIO`}</span>
                             &nbsp;-&nbsp;{nameImpuesto} (
                             {infoOrden?.cargosExtras.impuesto.valor} % ) :
