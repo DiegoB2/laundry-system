@@ -4,7 +4,6 @@ import { ResponsiveBar } from "@nivo/bar";
 import axios from "axios";
 import ExcelJS from "exceljs";
 import "./items.scss";
-import { simboloMoneda } from "../../../../../services/global";
 import SwitchModel from "../../../../../components/SwitchModel/SwitchModel";
 import { MonthPickerInput } from "@mantine/dates";
 import moment from "moment";

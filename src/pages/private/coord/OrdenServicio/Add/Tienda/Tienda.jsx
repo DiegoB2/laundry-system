@@ -20,6 +20,7 @@ const Tienda = () => {
   const navigate = useNavigate();
 
   const { lastRegister } = useSelector((state) => state.orden);
+  const InfoUsuario = useSelector((state) => state.user.infoUsuario);
 
   const handleRegistrar = async (data) => {
     const { infoOrden, infoPago, rol } = data;
@@ -29,10 +30,16 @@ const Tienda = () => {
       infoOrden: {
         ...infoOrden,
         estado: "registrado",
-        tipoRegistro: "normal",
+        typeRegistro: "normal",
       },
       infoPago,
       rol,
+      infoUser: {
+        _id: InfoUsuario._id,
+        name: InfoUsuario.name,
+        usuario: InfoUsuario.usuario,
+        rol: InfoUsuario.rol,
+      },
     };
     setRedirect(true);
 

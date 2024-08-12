@@ -36,7 +36,6 @@ const Details = ({ IdCliente }) => {
     state.orden.registered.find((item) => item._id === IdCliente)
   );
   const InfoUsuario = useSelector((state) => state.user.infoUsuario);
-  const ListUsuarios = useSelector((state) => state.user.listUsuario);
 
   const handleDateLarge = (fecha) => {
     const fechaObjeto = moment(fecha);
@@ -47,11 +46,6 @@ const Details = ({ IdCliente }) => {
   const handleHour = (hora) => {
     const hora12 = moment(hora, "HH:mm").format("h:mm A");
     return hora12;
-  };
-
-  const handleInfoUser = (idUser) => {
-    const usuario = ListUsuarios.find((usuario) => usuario._id === idUser);
-    return usuario ? usuario.name.split(" ")[0] : "No Encontrado";
   };
 
   useEffect(() => {
@@ -107,12 +101,32 @@ const Details = ({ IdCliente }) => {
               </div>
             </div>
           ) : null}
-          <table className="product-t">
+          <table
+            className={`tabla-service ${
+              infoCliente?.descuento.modoDescuento === "Manual"
+                ? ""
+                : "show-dsc-m"
+            }`}
+          >
             <thead>
               <tr>
                 <th>Cantidad</th>
-                <th>Producto</th>
-                <th>Descripción</th>
+
+                {infoCliente?.descuento.modoDescuento === "Manual" ? (
+                  <th>Item + Descripcion</th>
+                ) : (
+                  <>
+                    <th>Item</th>
+                    <th> Descripcion</th>
+                  </>
+                )}
+
+                {infoCliente?.descuento.modoDescuento === "Manual" ? (
+                  <>
+                    <th>Monto</th>
+                    <th>Dsct</th>
+                  </>
+                ) : null}
                 <th>Total</th>
               </tr>
             </thead>
@@ -120,57 +134,145 @@ const Details = ({ IdCliente }) => {
               {infoCliente?.Items.map((p, index) => (
                 <tr key={`${p._id}${index}`}>
                   <td>{formatThousandsSeparator(p.cantidad)}</td>
-                  <td>{p.item}</td>
-                  <td className="tADescription">
-                    <div className="contentDes">
-                      <div id={`${index}-dsp`} className="textarea-container">
-                        <textarea
-                          className="hide"
-                          rows={5}
-                          value={p.descripcion}
-                          readOnly={true}
-                        />
-                        <button
-                          type="button"
-                          className="expand-button"
-                          onClick={() => {
-                            const element = document.getElementById(
-                              `${index}-dsp`
-                            );
 
-                            if (element) {
-                              const hideElement =
-                                element.querySelector(".hide");
-                              const showElement =
-                                element.querySelector(".show");
-                              const iconElement =
-                                element.querySelector("#ico-action");
+                  {infoCliente?.descuento.modoDescuento === "Manual" ? (
+                    <td>
+                      <div className="cell-produc-descrip">
+                        <span>{p.item}</span>
+                        <div className="tADescription">
+                          <div className="contentDes">
+                            <div
+                              id={`${index}-dsp`}
+                              className="textarea-container"
+                            >
+                              <textarea
+                                className="hide"
+                                rows={5}
+                                placeholder="..."
+                                value={p.descripcion}
+                                readOnly={true}
+                              />
+                              <button
+                                type="button"
+                                className="expand-button"
+                                onClick={() => {
+                                  const element = document.getElementById(
+                                    `${index}-dsp`
+                                  );
 
-                              if (hideElement) {
-                                hideElement.classList.replace("hide", "show");
-                                iconElement.classList.replace(
-                                  "fa-chevron-down",
-                                  "fa-chevron-up"
-                                );
-                              } else if (showElement) {
-                                showElement.classList.replace("show", "hide");
-                                iconElement.classList.replace(
-                                  "fa-chevron-up",
-                                  "fa-chevron-down"
-                                );
-                              }
-                            }
-                          }}
-                        >
-                          <i
-                            id="ico-action"
-                            className="fa-solid fa-chevron-down"
-                          />
-                        </button>
+                                  if (element) {
+                                    const hideElement =
+                                      element.querySelector(".hide");
+                                    const showElement =
+                                      element.querySelector(".show");
+                                    const iconElement =
+                                      element.querySelector("#ico-action");
+
+                                    if (hideElement) {
+                                      hideElement.classList.replace(
+                                        "hide",
+                                        "show"
+                                      );
+                                      iconElement.classList.replace(
+                                        "fa-chevron-down",
+                                        "fa-chevron-up"
+                                      );
+                                    } else if (showElement) {
+                                      showElement.classList.replace(
+                                        "show",
+                                        "hide"
+                                      );
+                                      iconElement.classList.replace(
+                                        "fa-chevron-up",
+                                        "fa-chevron-down"
+                                      );
+                                    }
+                                  }
+                                }}
+                              >
+                                <i
+                                  id="ico-action"
+                                  className="fa-solid fa-chevron-down"
+                                />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td>{formatThousandsSeparator(p.total)}</td>
+                    </td>
+                  ) : (
+                    <>
+                      <td>{p.item}</td>
+                      <td className="tADescription space-dsc">
+                        <div className="contentDes">
+                          <div
+                            id={`${index}-dsp`}
+                            className="textarea-container"
+                          >
+                            <textarea
+                              className="hide"
+                              rows={5}
+                              placeholder="..."
+                              value={p.descripcion}
+                              readOnly={true}
+                            />
+                            <button
+                              type="button"
+                              className="expand-button"
+                              onClick={() => {
+                                const element = document.getElementById(
+                                  `${index}-dsp`
+                                );
+
+                                if (element) {
+                                  const hideElement =
+                                    element.querySelector(".hide");
+                                  const showElement =
+                                    element.querySelector(".show");
+                                  const iconElement =
+                                    element.querySelector("#ico-action");
+
+                                  if (hideElement) {
+                                    hideElement.classList.replace(
+                                      "hide",
+                                      "show"
+                                    );
+                                    iconElement.classList.replace(
+                                      "fa-chevron-down",
+                                      "fa-chevron-up"
+                                    );
+                                  } else if (showElement) {
+                                    showElement.classList.replace(
+                                      "show",
+                                      "hide"
+                                    );
+                                    iconElement.classList.replace(
+                                      "fa-chevron-up",
+                                      "fa-chevron-down"
+                                    );
+                                  }
+                                }
+                              }}
+                            >
+                              <i
+                                id="ico-action"
+                                className="fa-solid fa-chevron-down"
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </>
+                  )}
+                  {infoCliente?.descuento.modoDescuento === "Manual" ? (
+                    <>
+                      <td>{formatThousandsSeparator(p.monto)}</td>
+                      <td>{formatThousandsSeparator(p.descuentoManual)}</td>
+                      <td>{formatThousandsSeparator(p.total)}</td>
+                    </>
+                  ) : (
+                    <td>{formatThousandsSeparator(p.monto)}</td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -204,20 +306,23 @@ const Details = ({ IdCliente }) => {
 
             <table className="info-table">
               <tbody>
-                {infoCliente.factura ? (
+                {infoCliente.cargosExtras.impuesto.estado ? (
                   <tr>
-                    <td>Factura:</td>
+                    <td>Factura :</td>
                     <td>
                       {formatThousandsSeparator(
-                        infoCliente.cargosExtras.igv.importe
+                        infoCliente.cargosExtras.impuesto.importe
                       )}
                     </td>
                   </tr>
                 ) : null}
-                {infoCliente.descuento > 0 ? (
+                {infoCliente.descuento.estado &&
+                infoCliente.descuento.monto > 0 ? (
                   <tr>
-                    <td>Decuento:</td>
-                    <td>{formatThousandsSeparator(infoCliente.descuento)}</td>
+                    <td>Decuento :</td>
+                    <td>
+                      {formatThousandsSeparator(infoCliente.descuento.monto)}
+                    </td>
                   </tr>
                 ) : null}
                 <tr>
@@ -227,7 +332,6 @@ const Details = ({ IdCliente }) => {
               </tbody>
             </table>
           </div>
-
           <div className="more-a">
             <h2>
               Total - {formatThousandsSeparator(infoCliente.totalNeto, true)}
@@ -246,7 +350,7 @@ const Details = ({ IdCliente }) => {
                     {formatThousandsSeparator(p.total, true)}
                   </span>
                   <span className="_metodopago">{cLetter(p.metodoPago)}</span>
-                  <span>{handleInfoUser(p.idUser)}</span>
+                  <span>{p.infoUser.name}</span>
                   <span className="_ico">
                     {p.metodoPago === "Tarjeta" ? (
                       <i className="fa-solid fa-credit-card" />

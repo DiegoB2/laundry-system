@@ -7,10 +7,11 @@
     margin: 0 auto;
     gap: 15px;
     display: grid;
-    grid-template-columns: calc(100% - 315px) 300px;
+    place-content: center;
+    grid-template-columns: clamp(300px, calc(100% - 320px), 810px) 305px;
     .list-clientes {
       display: grid;
-      // min-width: 290px;
+
       width: 100%;
       gap: 20px;
       .header-cli {
@@ -70,7 +71,7 @@
               text-align: center;
               position: sticky;
               top: 0;
-              z-index: 10;
+              z-index: 1;
             }
           }
         }

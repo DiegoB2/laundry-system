@@ -16,7 +16,6 @@ import "./list.scss";
 import moment from "moment";
 import {
   DateCurrent,
-  GetFirstFilter,
   handleGetInfoPago,
   handleOnWaiting,
   handleItemsCantidad,
@@ -29,13 +28,13 @@ import { modals } from "@mantine/modals";
 
 import {
   GetOrdenServices_Date,
-  GetOrdenServices_DateRange,
+  GetOrdenServices_Last,
 } from "../../../../../redux/actions/aOrdenServices";
 import { GetMetas } from "../../../../../redux/actions/aMetas";
 import {
   setFilterBy,
   setLastRegister,
-  setSearchOptionByDate,
+  setSearchOptionByOthers,
   setSelectedMonth,
   updateStateLavadoOrden,
 } from "../../../../../redux/states/service_order";
@@ -54,7 +53,10 @@ import axios from "axios";
 
 const List = () => {
   //Filtros de Fecha
-  const monthCurrentPrevious = GetFirstFilter();
+
+  const { maxConsultasDefault } = useSelector(
+    (state) => state.negocio.infoNegocio
+  );
   const selectedMonth = useSelector((state) => state.orden.selectedMonth);
 
   const { registered } = useSelector((state) => state.orden);
@@ -74,14 +76,14 @@ const List = () => {
 
   const filterBy = useSelector((state) => state.orden.filterBy);
   // ------------------------------------------------------>
-  // (date) -> "FECHA"
+  // (other) -> "OTROS"
   // (pendiente)   -> "PENDIENTES"
-  const searhOptionByDate = useSelector(
-    (state) => state.orden.searhOptionByDate
+  const searhOptionByOthers = useSelector(
+    (state) => state.orden.searhOptionByOthers
   );
   // ------------------------------------------------------>
-  // (selected) -> "MESES ANTERIORES"
-  // (latest)   -> "(ANTERIOR) - (MES ACTUAL)"
+  // (date) -> "FECHA"
+  // (last)   -> "500 ULTIMOS"
 
   const [detailEdit, setDetailEdit] = useState(false);
   const [changePago, setChangePago] = useState(false);
@@ -312,7 +314,7 @@ ${horario}`;
       },
       {
         accessorKey: "onWaiting",
-        header: "En Espera",
+        header: "En Espera...",
         enableColumnFilter: false,
         Cell: ({ cell }) =>
           // Wrapped the arrow function with parentheses
@@ -334,10 +336,8 @@ ${horario}`;
             >
               {cell.getValue().showText}
             </Box>
-          ) : (
-            <span>-</span>
-          ),
-        size: 100,
+          ) : null,
+        size: 150,
       },
       {
         accessorKey: "items",
@@ -368,14 +368,9 @@ ${horario}`;
       },
       {
         accessorKey: "Pago",
-        header: "Pago",
+        header: "Estado de Pago",
         filterVariant: "select",
         mantineFilterSelectProps: {
-          data: ["COMPLETO", "INCOMPLETO", "PENDIENTE"],
-        },
-        mantineFilterTextInputProps: { placeholder: "C / I / P" },
-        editVariant: "select",
-        mantineEditSelectProps: {
           data: [
             {
               value: "COMPLETO",
@@ -391,8 +386,10 @@ ${horario}`;
             },
           ],
         },
+        mantineFilterTextInputProps: { placeholder: "C / I / P" },
+        editVariant: "select",
         enableEditing: false,
-        size: 140,
+        size: 150,
       },
       {
         accessorKey: "totalNeto",
@@ -405,7 +402,7 @@ ${horario}`;
         mantineFilterTextInputProps: {
           placeholder: "Total",
         },
-        size: 100,
+        size: 130,
       },
       {
         accessorKey: "FechaRecepcion",
@@ -460,7 +457,6 @@ ${horario}`;
         mantineFilterTextInputProps: {
           placeholder: "Tienda / Almacen / Donacion",
         },
-
         Cell: ({ cell }) => (
           // Wrapped the arrow function with parentheses
           <Box
@@ -490,19 +486,22 @@ ${horario}`;
     []
   );
 
+  const getObjectIdTimestamp = (objectId) => {
+    const timestamp = parseInt(objectId.substring(0, 8), 16) * 1000;
+    return new Date(timestamp);
+  };
+
   const handleGetFactura = async (info) => {
-    const reOrdenar = [...info].sort((a, b) => b.index - a.index);
+    const reOrdenar = [...info].sort((a, b) => {
+      return getObjectIdTimestamp(b._id) - getObjectIdTimestamp(a._id);
+    });
+
     const newData = await Promise.all(
       reOrdenar.map(async (d) => {
-        const dateEndProcess =
-          d.estadoPrenda === "donado"
-            ? d.donationDate.fecha
-            : d.dateEntrega.fecha;
-
         const onWaiting = await handleOnWaiting(
           d.dateRecepcion.fecha,
           d.estadoPrenda,
-          dateEndProcess
+          d.dateEntrega.fecha
         );
 
         const listItems = d.Items.filter(
@@ -518,7 +517,7 @@ ${horario}`;
           items: handleItemsCantidad(listItems),
           stateLavado: d.stateLavado,
           PParcial: estadoPago.pago,
-          Pago: estadoPago.estado,
+          Pago: estadoPago.estado.toLocaleUpperCase(),
           totalNeto: d.totalNeto,
           DNI: d.dni,
           Celular: d.celular,
@@ -557,9 +556,9 @@ ${horario}`;
       onConfirm: () => {
         if (confirmationEnabled) {
           confirmationEnabled = false;
-          dispatch(setSearchOptionByDate(option));
-          if (option === "latest") {
-            handleGetLatestMonth();
+          dispatch(setSearchOptionByOthers(option));
+          if (option === "last") {
+            handleGetLatest();
           } else {
             handleGetSelectedMonth(selectedMonth);
           }
@@ -575,13 +574,9 @@ ${horario}`;
     dispatch(GetOrdenServices_Date(dateToFind));
   };
 
-  const handleGetLatestMonth = async () => {
+  const handleGetLatest = async () => {
     setOnLoadingTable(true);
-    const dateToFind = {
-      dateInicio: monthCurrentPrevious.formatoD[0],
-      dateFin: monthCurrentPrevious.formatoD[1],
-    };
-    dispatch(GetOrdenServices_DateRange(dateToFind));
+    dispatch(GetOrdenServices_Last());
   };
 
   const handleGetTotalPedidos = () => {
@@ -664,15 +659,17 @@ ${horario}`;
 
   useEffect(() => {
     let infoFiltrada;
-    if (filterBy === "date") {
-      if (searhOptionByDate === "latest") {
-        const dateInicio = monthCurrentPrevious.formatoD[0];
-        const dateFin = monthCurrentPrevious.formatoD[1];
-
-        infoFiltrada = basicInformationSearched.filter((iFilter) => {
-          const fechaCreation = moment(iFilter.FechaCreation, "YYYY-MM-DD");
-          return fechaCreation.isBetween(dateInicio, dateFin, "days", "[]");
+    if (filterBy === "others") {
+      if (searhOptionByOthers === "last") {
+        // Ordena los documentos por el timestamp del campo _id
+        const reOrdenar = [...basicInformationSearched].sort((a, b) => {
+          return getObjectIdTimestamp(b.Id) - getObjectIdTimestamp(a.Id);
         });
+
+        // Selecciona solo los últimos x cantidad
+        const ultimos = reOrdenar.slice(0, maxConsultasDefault);
+
+        infoFiltrada = ultimos;
       } else {
         // Usamos moment para obtener el primer y último día del mes de fechaSeleccionada
         const dateInicio = moment(selectedMonth)
@@ -710,22 +707,22 @@ ${horario}`;
             <div className="sw-filter">
               <SwtichDimension
                 // title=""
-                onSwitch="Fecha"
-                offSwitch="Pendientes"
+                onSwitch="Pendientes"
+                offSwitch="Otros"
                 name="defaultFilter"
-                defaultValue={filterBy === "date" ? true : false}
+                defaultValue={filterBy === "others" ? false : true}
                 handleChange={(value) => {
-                  const option = value === "Fecha" ? "date" : "pendiente";
+                  const option = value === "Otros" ? "others" : "pendiente";
                   if (option === "pendiente") {
                     if (
-                      filterBy === "date" &&
-                      searhOptionByDate === "selected"
+                      filterBy === "others" &&
+                      searhOptionByOthers === "date"
                     ) {
-                      handleGetLatestMonth();
+                      handleGetLatest();
                     }
                   }
                   setOnLoadingTable(true);
-                  dispatch(setSearchOptionByDate("latest"));
+                  dispatch(setSearchOptionByOthers("last"));
                   dispatch(setFilterBy(option));
                 }}
                 colorOn="goldenrod"
@@ -733,33 +730,45 @@ ${horario}`;
                 // disabled=""
               />
               {filterBy === "pendiente" ? (
-                <div className="cicle-cant">{ListOrdenes.length}</div>
+                <div className="cicle-cant l-pos">{ListOrdenes.length}</div>
               ) : null}
             </div>
-            {filterBy === "date" ? (
+
+            {filterBy === "others" ? (
               <div className="filter-date">
-                <SwtichDimension
-                  // title=""
-                  onSwitch={monthCurrentPrevious.formatoS}
-                  offSwitch="MESES ANTERIORES"
-                  name="switchFC"
-                  defaultValue={searhOptionByDate === "selected" ? false : true}
-                  handleChange={(value) => {
-                    const option =
-                      value === "MESES ANTERIORES" ? "selected" : "latest";
-                    handleValidarConsulta(option);
-                  }}
-                  colorOn="goldenrod"
-                  // colorOff=""
-                  // disabled=""
-                />
-                {searhOptionByDate === "selected" ? (
+                <div className="sw-filter">
+                  <SwtichDimension
+                    // title=""
+                    onSwitch="ULTIMOS"
+                    offSwitch="FECHA"
+                    name="switchFC"
+                    defaultValue={searhOptionByOthers === "date" ? false : true}
+                    handleChange={(value) => {
+                      const option = value === "FECHA" ? "date" : "last";
+                      handleValidarConsulta(option);
+                    }}
+                    colorOn="goldenrod"
+                    // colorOff=""
+                    // disabled=""
+                  />
+                  <div
+                    className={`cicle-cant ${
+                      searhOptionByOthers === "date" ? "r-pos" : "l-pos"
+                    }`}
+                  >
+                    {searhOptionByOthers === "others"
+                      ? maxConsultasDefault
+                      : ListOrdenes.length}
+                  </div>
+                </div>
+
+                {searhOptionByOthers === "date" ? (
                   <MonthPickerInput
                     className="date-m"
                     size="md"
                     placeholder="Pick date"
                     value={selectedMonth}
-                    maxDate={moment().subtract(2, "months").toDate()}
+                    maxDate={moment().toDate()}
                     onChange={handleGetSelectedMonth}
                     mx="auto"
                     maw={400}
@@ -808,6 +817,9 @@ ${horario}`;
                 background: "transparent",
               },
             })}
+            mantinePaginationProps={{
+              showRowsPerPage: false,
+            }}
             mantineTableBodyRowProps={({ row }) => ({
               onDoubleClick: () => handleSelectRow(row.original),
               onTouchStart: () => handleTouchStartRow(row.original),
@@ -831,9 +843,10 @@ ${horario}`;
             enableStickyHeader={true}
             mantineTableContainerProps={{
               sx: {
-                // maxHeight: " clamp(370px, calc(100vh - 56px), 370px)",
                 width: "100%",
-                maxHeight: "100vh",
+                height: "100%",
+                maxHeight: "calc(100% - 56px)",
+                overflow: onLoadingTable ? "unset" : "auto",
                 zIndex: "2",
               },
             }}

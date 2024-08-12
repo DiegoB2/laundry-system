@@ -8,6 +8,7 @@ import SwtichModel from "../../../../../../components/SwitchModel/SwitchModel";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Notify } from "../../../../../../utils/notify/Notify";
+import { codigoPhonePais } from "../../../../../../services/global";
 
 import { WSendMessage } from "../../../../../../services/default.services";
 
@@ -21,7 +22,9 @@ const index = () => {
   const [showDescripcion, setDescription] = useState(false);
   const [tipoTicket, setTipoTicket] = useState(false);
   const [phoneA, setPhoneA] = useState(
-    infoOrden.celular ? `${infoOrden.celular.replace(/\s/g, "")}` : ""
+    infoOrden.celular
+      ? `${codigoPhonePais}${infoOrden.celular.replace(/\s/g, "")}`
+      : ""
   );
   const componentRef = React.useRef();
 
@@ -86,6 +89,7 @@ Le enviaremos un mensaje 🥏 cuando esté listo
           </div>
         ) : null}
       </div>
+
       <div className="actions">
         <SwtichModel
           title="Tipo Ticket :"

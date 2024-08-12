@@ -19,6 +19,7 @@ const FinishReserva = () => {
   const ordenReservada = useSelector((state) =>
     state.orden.reserved.find((item) => item._id === id)
   );
+  const InfoUsuario = useSelector((state) => state.user.infoUsuario);
 
   const handleFinishReserva = async (updateData) => {
     setRedirect(true);
@@ -38,8 +39,6 @@ const FinishReserva = () => {
       subTotal,
       totalNeto,
       cargosExtras,
-      factura,
-      modoDescuento,
       gift_promo,
       attendedBy,
     } = infoOrden;
@@ -62,13 +61,17 @@ const FinishReserva = () => {
           subTotal,
           totalNeto,
           cargosExtras,
-          factura,
-          modoDescuento,
           gift_promo,
           attendedBy,
         },
         infoPago,
         rol,
+        infoUser: {
+          _id: InfoUsuario._id,
+          name: InfoUsuario.name,
+          usuario: InfoUsuario.usuario,
+          rol: InfoUsuario.rol,
+        },
       })
     ).then((res) => {
       if (res.error) {

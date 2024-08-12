@@ -78,12 +78,16 @@
     }
     .table-space {
       width: 100%;
+      display: grid;
+      grid-template-rows: min-content minmax(auto, 385px);
+      height: 100%;
+      gap: 20px;
       .header-space {
+        width: 100%;
         display: flex;
         gap: 25px;
         place-content: center;
         margin: auto;
-        margin-bottom: 15px;
         position: relative;
         justify-content: flex-start;
         align-items: center;
@@ -92,7 +96,6 @@
           .cicle-cant {
             position: absolute;
             top: -10px;
-            right: -10px;
             background: #3a3939;
             color: #fff;
             border-radius: 15px;
@@ -100,6 +103,12 @@
             padding: 0px 10px;
             padding-bottom: 2px;
             z-index: 1;
+          }
+          .r-pos {
+            right: -10px;
+          }
+          .l-pos {
+            left: -10px;
           }
         }
         .filter-date {
@@ -221,5 +230,17 @@
       position: relative;
       top: 5px;
     }
+  }
+}
+
+@media (min-height: 700px) {
+  .table-space {
+    grid-template-rows: min-content 480px !important;
+  }
+}
+
+@media (min-height: 800px) {
+  .table-space {
+    grid-template-rows: min-content 580px !important;
   }
 }

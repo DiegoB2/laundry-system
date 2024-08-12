@@ -109,7 +109,7 @@ const CuadreCaja = () => {
         _id: pay._id,
         user: pay.infoUser?.name,
         monto: pay.total,
-        decripcion: `Orden N° ${pay.orden} de ${pay.nombre}, (${pay.Modalidad})`,
+        decripcion: `Orden N° ${pay.codRecibo} de ${pay.Nombre}, (${pay.Modalidad})`,
         tipo: "ingreso",
         hora: pay.date?.hora,
       });

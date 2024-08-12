@@ -269,12 +269,12 @@ const ListPagos = ({
               </thead>
               <tbody>
                 {iClienteEfectivo
-                  .sort((a, b) => parseInt(a.orden) - parseInt(b.orden))
+                  .sort((a, b) => parseInt(a.codRecibo) - parseInt(b.codRecibo))
                   .map((cliente, index) => (
                     <tr key={index}>
-                      <td>{cliente.orden}</td>
+                      <td>{cliente.codRecibo}</td>
                       <td>{cliente.Modalidad}</td>
-                      <td>{cliente.nombre}</td>
+                      <td>{cliente.Nombre}</td>
                       <td>{formatThousandsSeparator(cliente.total)}</td>
                     </tr>
                   ))}
@@ -348,9 +348,9 @@ const ListPagos = ({
                           {iClienteTransferencia[tipoTransferencia].map(
                             (cliente, idx) => (
                               <tr key={idx}>
-                                <td>{cliente.orden}</td>
+                                <td>{cliente.codRecibo}</td>
                                 <td>{cliente.Modalidad}</td>
-                                <td>{cliente.nombre}</td>
+                                <td>{cliente.Nombre}</td>
                                 <td>
                                   {formatThousandsSeparator(cliente.total)}
                                 </td>
@@ -381,7 +381,9 @@ const ListPagos = ({
                 </thead>
                 <tbody>
                   {iClienteTarjeta
-                    .sort((a, b) => parseInt(a.orden) - parseInt(b.orden))
+                    .sort(
+                      (a, b) => parseInt(a.codRecibo) - parseInt(b.codRecibo)
+                    )
                     .map((cliente, index) => (
                       <tr
                         key={index}
@@ -391,9 +393,9 @@ const ListPagos = ({
                             : null
                         }`}
                       >
-                        <td>{cliente.orden}</td>
+                        <td>{cliente.codRecibo}</td>
                         <td>{cliente.Modalidad}</td>
-                        <td>{cliente.nombre}</td>
+                        <td>{cliente.Nombre}</td>
                         <td>{formatThousandsSeparator(cliente.total)}</td>
                       </tr>
                     ))}
