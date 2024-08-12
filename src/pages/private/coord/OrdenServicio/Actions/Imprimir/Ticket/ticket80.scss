@@ -91,11 +91,10 @@ $capitalizacion: lowercase;
       }
 
       .info-detail {
-        width: 100%;
+        width: 80mm;
         border-collapse: collapse;
-        border-bottom: 0.6mm solid #000;
         .tb-date {
-          width: 100%;
+          width: 80mm;
           border-bottom: 0.2mm solid #000;
           line-height: 1.2;
           .date-time {
@@ -109,7 +108,8 @@ $capitalizacion: lowercase;
           .h-cli {
             line-height: 1.2;
             border-bottom: solid 1px #000;
-            padding: 2px;
+            padding: 2px 0;
+            width: 80mm;
             span {
               text-transform: uppercase;
               font-size: $sizeBase;
@@ -122,7 +122,6 @@ $capitalizacion: lowercase;
             }
           }
           .tb-info-cliente {
-            border-bottom: solid 1px #000;
             padding: 2px 0;
             tbody {
               line-height: 1.4;
@@ -201,7 +200,7 @@ $capitalizacion: lowercase;
 
           thead {
             border-bottom: 0.2mm solid #000;
-
+            border-top: 0.8mm solid #000;
             th {
               font-weight: bold;
             }
@@ -226,7 +225,7 @@ $capitalizacion: lowercase;
               }
               td {
                 &:nth-child(2) {
-                  font-size: $sizeBase;
+                  font-size: 15px;
                   display: flex;
                   line-height: 1;
                   // justify-content: flex-start;
@@ -574,7 +573,8 @@ $capitalizacion: lowercase;
   .container-ticket {
     transform-origin: top left;
     width: $widthG_mm;
-    padding: 0 5px;
+    padding: 0;
+    padding-left: 2mm;
     visibility: visible;
     box-shadow: none;
 

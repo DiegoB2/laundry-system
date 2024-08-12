@@ -140,9 +140,9 @@ const List = () => {
 Le saluda la *LAVANDERÍA ${InfoNegocio.name}* 😃
                   
 Le informo que ya está *LISTO* 👍 su pedido${
-        iRow.Pago !== "Completo"
+        iRow.Pago !== "COMPLETO"
           ? ` ${
-              iRow.Pago === "Pendiente"
+              iRow.Pago === "PENDIENTE"
                 ? `con monto a pagar de *${formatThousandsSeparator(
                     iRow.totalNeto,
                     true
