@@ -20,7 +20,6 @@ import {
   nameImpuesto,
   politicaAbandono,
   showPuntosOnTicket,
-  simboloMoneda,
 } from "../../../../../../../services/global";
 import { useSelector } from "react-redux";
 import { Notify } from "../../../../../../../utils/notify/Notify";
@@ -32,9 +31,6 @@ const Ticket = React.forwardRef((props, ref) => {
   const [sPago, setSPago] = useState();
   const [infoPuntosCli, setInfoPuntosCli] = useState(null);
 
-  const { InfoImpuesto: iImpuesto } = useSelector(
-    (state) => state.modificadores
-  );
   const iDelivery = useSelector((state) => state.servicios.serviceDelivery);
   const ListClientes = useSelector((state) => state.clientes.listClientes);
 
@@ -433,12 +429,13 @@ const Ticket = React.forwardRef((props, ref) => {
                         <tr>
                           <td>
                             <span className="label-igv">{`• APLICADO AL PRECIO`}</span>
-                            &nbsp;-&nbsp;{nameImpuesto} ({iImpuesto.IGV * 100} %
-                            ) :
+                            &nbsp;-&nbsp;{nameImpuesto} (
+                            {infoOrden?.cargosExtras.impuesto.importe} % ) :
                           </td>
                           <td>
                             {formatThousandsSeparator(
-                              infoOrden.subTotal * iImpuesto.IGV
+                              infoOrden?.subTotal *
+                                infoOrden?.cargosExtras.impuesto.importe
                             )}
                           </td>
                         </tr>
@@ -466,25 +463,15 @@ const Ticket = React.forwardRef((props, ref) => {
                 {infoOrden?.descuento.estado &&
                 infoOrden?.descuento.info &&
                 infoOrden?.descuento.modoDescuento !== "Ninguno" &&
+                infoOrden?.descuento.modoDescuento !== "Manual" &&
                 !tipoTicket ? (
                   <div className="space-ahorro">
                     <h2 className="title">
                       ¡Felicidades Ahorraste&nbsp;
-                      {infoOrden?.descuento.estado &&
-                      infoOrden?.descuento.info &&
-                      infoOrden?.descuento.modoDescuento === "Manual"
-                        ? formatThousandsSeparator(
-                            infoOrden?.descuento.info.reduce(
-                              (total, item) =>
-                                total + parseFloat(item.descuentoMonto),
-                              0
-                            ),
-                            true
-                          )
-                        : formatThousandsSeparator(
-                            infoOrden?.descuento.monto,
-                            true
-                          )}{" "}
+                      {formatThousandsSeparator(
+                        infoOrden?.descuento.monto,
+                        true
+                      )}{" "}
                       ¡
                     </h2>
                     {infoOrden?.descuento.modoDescuento === "Promocion" ? (
@@ -536,30 +523,7 @@ const Ticket = React.forwardRef((props, ref) => {
                           )}
                         </div>
                       </div>
-                    ) : (
-                      <div className="info-manual">
-                        <span>Descuento directo :</span>
-                        <div className="body-ahorro">
-                          <div className="list-descuentos">
-                            <ul>
-                              {infoOrden?.descuento.info.map((dsc, index) => (
-                                <li key={index}>
-                                  <span>
-                                    {dsc.item}&nbsp; {simboloMoneda}
-                                    {dsc.descuentoPorcentaje}&nbsp; desct.
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          {sizePaper80 ? (
-                            <div className="img-pet">
-                              <img src={AhorroPet} alt="" />
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    )}
+                    ) : null}
                   </div>
                 ) : null}
               </div>

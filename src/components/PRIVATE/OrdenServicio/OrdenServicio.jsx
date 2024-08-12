@@ -131,7 +131,7 @@ const OrdenServicio = ({ mode, onAction, infoDefault, titleMode }) => {
       dateIngreso: new Date(),
       dateRecojo: new Date(),
       hourRecojo: defaultHoraRecojo,
-      datePrevista: new Date(),
+      datePrevista: moment().add(1, "days").toDate(),
       hourPrevista: defaultHoraPrevista,
       Items: [],
       descuento: {
