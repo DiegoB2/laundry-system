@@ -43,7 +43,7 @@ import EndProcess from "../Actions/EndProcess/EndProcess";
 import Details from "../Details/Details";
 import BarProgress from "../../../../../components/PRIVATE/BarProgress/BarProgress";
 import { Roles } from "../../../../../models";
-import { documento } from "../../../../../services/global";
+import { codigoPhonePais, documento } from "../../../../../services/global";
 import { useRef } from "react";
 import SwtichDimension from "../../../../../components/SwitchDimension/SwitchDimension";
 import { WSendMessage } from "../../../../../services/default.services";
@@ -160,7 +160,7 @@ Su orden es *#${iRow.Recibo}* ✏
 *RECUERDA* que el horario de atención es:
 ${horario}`;
 
-      WSendMessage(mensaje, number);
+      WSendMessage(mensaje, `${codigoPhonePais}${number}`);
     } else {
       Notify("Cliente sin número", "", "fail");
     }
